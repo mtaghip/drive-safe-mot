@@ -1,25 +1,52 @@
-# CODING AGENTS: READ THIS FIRST
+# Drive Safe MOT Centre website
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+Next.js site for Drive Safe MOT Centre, 21 Taylor St, Luton LU2 0EY, with online booking of one-hour slots.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+Pages: `/` home, `/services`, `/book` (`/book?service=dpf` preselects a service), `/contact`.
 
-## What you should do — IMPORTANT
+## Running it
 
-**Read the chat transcripts first.** There are 1 chat transcript(s) in `chats/`. The transcripts show the full back-and-forth between the user and the design assistant — they tell you **what the user actually wants** and **where they landed** after iterating. Don't skip them. The final HTML files are the output, but the chat is where the intent lives.
+```bash
+npm install
+cp .env.example .env.local   # fill in what you have
+npm run dev                  # http://localhost:3000
+npm test                     # schedule + validation unit tests
+npm run build && npm start   # production
+```
 
-**Read `project/Drive Safe MOT Centre.dc.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+Without `DATABASE_URL`, development keeps bookings in memory (lost on restart). Without `RESEND_API_KEY`, emails are printed to the server log. In production, `DATABASE_URL` is required.
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+## Environment
 
-## About the design files
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | Postgres connection string. The `bookings` table is created automatically on first use. |
+| `RESEND_API_KEY` | [Resend](https://resend.com) key for confirmation emails. |
+| `BOOKING_FROM_EMAIL` | Sender, on a domain verified in Resend, e.g. `Drive Safe MOT Centre <bookings@yourdomain>`. |
+| `GARAGE_EMAIL` | Receives a notification for every new booking (reply goes to the customer). |
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+## How booking works
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
+- Slots are 9:00–17:00 in one-hour blocks, Monday–Friday, from tomorrow for 4 weeks (UK time). Change these in `BOOKING` in `lib/site.ts`. Saturday opening is a single flag there and also updates the opening hours shown on the site.
+- One booking per slot. The database enforces it with a unique index, so two people can't take the same slot; the loser is told and the calendar refreshes.
+- To cancel a booking and free its slot: `UPDATE bookings SET cancelled_at = now() WHERE ref = 'DS-XXXXX';`
+- The home page's "Next free slot" reads live availability.
 
-## Bundle contents
+## Code map
 
-- `README.md` — this file
-- `chats/` — conversation transcripts (read these!)
-- `project/` — the `Drive Safe MOT Centre Website` project files (HTML prototypes, assets, components)
+- `lib/site.ts`: business details, services and prices, reviews, booking rules
+- `lib/schedule.ts`: UK-time date logic shared by browser and server
+- `lib/validation.ts`: booking validation shared by the form and the API
+- `lib/store.ts`: Postgres storage (in-memory fallback for dev)
+- `lib/email.ts`: confirmation and garage notification emails
+- `app/api/availability`, `app/api/bookings`: booking API
+- `components/BookingForm.tsx`: the 4-step booking UI
+
+## Content still to replace
+
+- The three reviews on the home page are placeholders. Swap in real Google reviews in `REVIEWS` in `lib/site.ts`.
+- Tyre change, servicing and tuning show "Call" for price until real prices are added.
+
+## Design source
+
+`project/` and `chats/` hold the Claude Design handoff this site was built from (`project/Drive Safe MOT Centre.dc.html`).
