@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;display=swap">
+<style>
+html,body{margin:0;background:#f6f4ee}
+body{font-family:'Archivo',system-ui,sans-serif;color:#0e1a2c;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0f2340}
+a:hover{color:#16305a}
+input,button{font-family:inherit}
+</style>
+</helmet>
+
+<header style="position:sticky;top:0;z-index:30;background:#0f2340;color:#fff;border-bottom:1px solid rgba(255,255,255,.08)">
+  <div style="max-width:1180px;margin:0 auto;padding:0 clamp(18px,4vw,40px);height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px">
+    <a href="#home" style="display:flex;align-items:center;gap:12px;color:#fff;text-decoration:none">
+      <span style="width:40px;height:40px;border-radius:9px;background:#f4b324;display:grid;place-items:center;flex:none">
+        <svg width="24" height="24" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7" style="fill:none;stroke:#0f2340;stroke-width:3;stroke-linecap:round;stroke-linejoin:round"></path></svg>
+      </span>
+      <span style="display:flex;flex-direction:column;line-height:1">
+        <span style="font-weight:800;font-size:20px;font-stretch:78%;letter-spacing:.02em;text-transform:uppercase">Drive Safe</span>
+        <span style="font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#f4b324;margin-top:4px;white-space:nowrap">MOT Centre · Luton</span>
+      </span>
+    </a>
+    <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+      <nav style="display:flex;align-items:center;gap:2px">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+          <a href="{{ n.href }}" style="padding:24px 14px 22px;color:{{ n.color }};text-decoration:none;font-weight:600;font-size:15px;white-space:nowrap;border-bottom:3px solid {{ n.border }}">{{ n.label }}</a>
+        </sc-for>
+      </nav>
+      <div style="display:flex;align-items:center;gap:18px">
+        <a href="tel:01582729943" style="display:flex;align-items:center;gap:8px;color:#fff;text-decoration:none;font-weight:700;font-size:16px;white-space:nowrap">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z" style="fill:none;stroke:#f4b324;stroke-width:2;stroke-linejoin:round"></path></svg>
+          01582 729943
+        </a>
+        <a href="#book" style="background:#f4b324;color:#0f2340;text-decoration:none;font-weight:700;font-size:15px;padding:11px 18px;border-radius:8px;white-space:nowrap" style-hover="background:#ffc63d;color:#0f2340">Book MOT</a>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isMobile }}">
+      <div style="display:flex;align-items:center;gap:8px">
+        <button onClick="{{ toggleMenu }}" aria-label="Menu" style="width:48px;height:48px;border-radius:9px;border:1px solid rgba(255,255,255,.2);background:transparent;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer">
+          <span style="width:20px;height:2px;background:#fff;border-radius:2px"></span>
+          <span style="width:20px;height:2px;background:#fff;border-radius:2px"></span>
+          <span style="width:20px;height:2px;background:#fff;border-radius:2px"></span>
+        </button>
+      </div>
+    </sc-if>
+  </div>
+  <sc-if value="{{ menuShown }}">
+    <nav style="border-top:1px solid rgba(255,255,255,.1);padding:8px clamp(18px,4vw,40px) 20px;display:flex;flex-direction:column">
+      <sc-for list="{{ nav }}" as="n">
+        <a href="{{ n.href }}" style="padding:16px 0;color:{{ n.color }};text-decoration:none;font-weight:700;font-size:20px;border-bottom:1px solid rgba(255,255,255,.08)">{{ n.label }}</a>
+      </sc-for>
+      <a href="tel:01582729943" style="margin-top:18px;padding:16px;text-align:center;border-radius:10px;background:#f4b324;color:#0f2340;text-decoration:none;font-weight:800;font-size:18px">Call 01582 729943</a>
+    </nav>
+  </sc-if>
+</header>
+
+<main>
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <section data-screen-label="Home" style="background:#0f2340;color:#fff;overflow:hidden">
+    <div style="max-width:1180px;margin:0 auto;padding:clamp(40px,7vw,96px) clamp(18px,4vw,40px) clamp(48px,7vw,104px);display:flex;flex-wrap:wrap;gap:clamp(32px,5vw,64px);align-items:flex-end">
+      <div style="flex:1 1 440px;min-width:0">
+        <div style="font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#f4b324">Your local MOT centre on Taylor Street</div>
+        <h1 style="margin:18px 0 0;font-weight:850;font-stretch:72%;text-transform:uppercase;font-size:clamp(48px,9vw,104px);line-height:.9;letter-spacing:-.005em;text-wrap:balance">Safe hands for your MOT.</h1>
+        <p style="margin:24px 0 0;font-size:clamp(17px,2vw,20px);line-height:1.55;color:#c9d2e2;max-width:520px;text-wrap:pretty">Friendly, local MOT testing and repairs in Luton. Pick a one-hour slot online or give us a ring, and we'll look after the rest.</p>
+        <div style="margin-top:34px;display:flex;flex-wrap:wrap;gap:12px">
+          <a href="#book" style="background:#f4b324;color:#0f2340;text-decoration:none;font-weight:800;font-size:17px;padding:17px 26px;border-radius:10px;min-height:56px;display:flex;align-items:center" style-hover="background:#ffc63d;color:#0f2340">Book your MOT online</a>
+          <a href="tel:01582729943" style="border:1.5px solid rgba(255,255,255,.35);color:#fff;text-decoration:none;font-weight:700;font-size:17px;padding:17px 24px;border-radius:10px;min-height:56px;display:flex;align-items:center" style-hover="border-color:#fff;color:#fff">Call 01582 729943</a>
+        </div>
+      </div>
+      <div style="flex:0 1 360px;min-width:0;width:100%;background:#16305a;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+          <span style="font-size:14px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#c9d2e2">MOT test</span>
+          <span style="font-size:13px;color:#c9d2e2">Fixed price</span>
+        </div>
+        <div style="font-weight:850;font-stretch:70%;font-size:clamp(96px,14vw,150px);line-height:.85;color:#f4b324;margin-top:14px;letter-spacing:-.02em">£45</div>
+        <div style="margin-top:22px;padding-top:20px;border-top:1px solid rgba(255,255,255,.12);display:flex;flex-direction:column;gap:4px">
+          <span style="font-size:13px;color:#c9d2e2">Next free slot</span>
+          <span style="font-size:18px;font-weight:700">{{ nextSlot }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:#fff;border-bottom:1px solid #e6e1d6">
+    <div style="max-width:1180px;margin:0 auto;padding:28px clamp(18px,4vw,40px);display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px 40px">
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <span style="width:32px;height:32px;border-radius:50%;background:#fdf1d3;display:grid;place-items:center;flex:none"><svg width="24" height="24" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M5 12.5l4.5 4.5L19 7" style="fill:none;stroke:#0f2340;stroke-width:3;stroke-linecap:round;stroke-linejoin:round"></path></svg></span>
+        <div><div style="font-weight:700;font-size:16px">Prices shown up front</div><div style="font-size:15px;color:#586377;margin-top:3px;line-height:1.45">£45 MOT, no surprises at the counter.</div></div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <span style="width:32px;height:32px;border-radius:50%;background:#fdf1d3;display:grid;place-items:center;flex:none"><svg width="24" height="24" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M5 12.5l4.5 4.5L19 7" style="fill:none;stroke:#0f2340;stroke-width:3;stroke-linecap:round;stroke-linejoin:round"></path></svg></span>
+        <div><div style="font-weight:700;font-size:16px">Explained in plain English</div><div style="font-size:15px;color:#586377;margin-top:3px;line-height:1.45">We talk you through results and advisories.</div></div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <span style="width:32px;height:32px;border-radius:50%;background:#fdf1d3;display:grid;place-items:center;flex:none"><svg width="24" height="24" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M5 12.5l4.5 4.5L19 7" style="fill:none;stroke:#0f2340;stroke-width:3;stroke-linecap:round;stroke-linejoin:round"></path></svg></span>
+        <div><div style="font-weight:700;font-size:16px">Book in under a minute</div><div style="font-size:15px;color:#586377;margin-top:3px;line-height:1.45">One-hour slots, 9am to 5pm, from tomorrow.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1180px;margin:0 auto;padding:clamp(56px,8vw,104px) clamp(18px,4vw,40px)">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px">
+      <h2 style="margin:0;font-weight:850;font-stretch:72%;text-transform:uppercase;font-size:clamp(36px,5.5vw,60px);line-height:.95">What we do</h2>
+      <a href="#services" style="font-weight:700;font-size:16px;color:#0f2340">All services and prices →</a>
+    </div>
+    <div style="margin-top:36px;border-top:2px solid #0f2340">
+      <a href="#services" style="display:grid;grid-template-columns:minmax(64px,120px) minmax(0,1fr) auto;gap:clamp(14px,3vw,40px);align-items:baseline;padding:clamp(22px,3vw,32px) 0;border-bottom:1px solid #d9d4c7;text-decoration:none;color:#0e1a2c" style-hover="background:#efece4;color:#0e1a2c">
+        <span style="font-weight:850;font-stretch:70%;font-size:clamp(40px,6vw,72px);line-height:.8;color:#f4b324">01</span>
+        <span style="min-width:0"><span style="display:block;font-weight:800;font-size:clamp(22px,2.6vw,30px)">MOT test</span><span style="display:block;margin-top:6px;font-size:16px;line-height:1.5;color:#586377;max-width:560px">A full MOT to the DVSA standard, with the result and any advisories talked through before you leave.</span></span>
+        <span style="text-align:right"><span style="display:block;font-weight:850;font-stretch:75%;font-size:clamp(28px,3.4vw,40px)">£45</span><span style="display:block;font-size:13px;color:#586377">fixed price</span></span>
+      </a>
+      <a href="#services" style="display:grid;grid-template-columns:minmax(64px,120px) minmax(0,1fr) auto;gap:clamp(14px,3vw,40px);align-items:baseline;padding:clamp(22px,3vw,32px) 0;border-bottom:1px solid #d9d4c7;text-decoration:none;color:#0e1a2c" style-hover="background:#efece4;color:#0e1a2c">
+        <span style="font-weight:850;font-stretch:70%;font-size:clamp(40px,6vw,72px);line-height:.8;color:#f4b324">02</span>
+        <span style="min-width:0"><span style="display:block;font-weight:800;font-size:clamp(22px,2.6vw,30px)">DPF clean</span><span style="display:block;margin-top:6px;font-size:16px;line-height:1.5;color:#586377;max-width:560px">Diesel warning light or losing power? We clean your particulate filter and get it flowing again.</span></span>
+        <span style="text-align:right"><span style="display:block;font-weight:850;font-stretch:75%;font-size:clamp(28px,3.4vw,40px)">£150</span><span style="display:block;font-size:13px;color:#586377">from</span></span>
+      </a>
+      <a href="#services" style="display:grid;grid-template-columns:minmax(64px,120px) minmax(0,1fr) auto;gap:clamp(14px,3vw,40px);align-items:baseline;padding:clamp(22px,3vw,32px) 0;border-bottom:1px solid #d9d4c7;text-decoration:none;color:#0e1a2c" style-hover="background:#efece4;color:#0e1a2c">
+        <span style="font-weight:850;font-stretch:70%;font-size:clamp(40px,6vw,72px);line-height:.8;color:#f4b324">03</span>
+        <span style="min-width:0"><span style="display:block;font-weight:800;font-size:clamp(22px,2.6vw,30px)">MOT works</span><span style="display:block;margin-top:6px;font-size:16px;line-height:1.5;color:#586377;max-width:560px">Repairs to get you through your MOT, from brakes and tyres to lights and suspension.</span></span>
+        <span style="text-align:right"><span style="display:block;font-weight:850;font-stretch:75%;font-size:clamp(28px,3.4vw,40px)">Quoted</span><span style="display:block;font-size:13px;color:#586377">before we start</span></span>
+      </a>
+      <a href="#services" style="display:grid;grid-template-columns:minmax(64px,120px) minmax(0,1fr) auto;gap:clamp(14px,3vw,40px);align-items:baseline;padding:clamp(22px,3vw,32px) 0;border-bottom:1px solid #d9d4c7;text-decoration:none;color:#0e1a2c" style-hover="background:#efece4;color:#0e1a2c">
+        <span style="font-weight:850;font-stretch:70%;font-size:clamp(40px,6vw,72px);line-height:.8;color:#f4b324">04</span>
+        <span style="min-width:0"><span style="display:block;font-weight:800;font-size:clamp(22px,2.6vw,30px)">Tyre change</span><span style="display:block;margin-top:6px;font-size:16px;line-height:1.5;color:#586377;max-width:560px">New tyres supplied and fitted, wheels balanced and pressures checked.</span></span>
+        <span style="text-align:right"><span style="display:block;font-weight:850;font-stretch:75%;font-size:clamp(28px,3.4vw,40px)">Call</span><span style="display:block;font-size:13px;color:#586377">for a price</span></span>
+      </a>
+      <a href="#services" style="display:grid;grid-template-columns:minmax(64px,120px) minmax(0,1fr) auto;gap:clamp(14px,3vw,40px);align-items:baseline;padding:clamp(22px,3vw,32px) 0;border-bottom:1px solid #d9d4c7;text-decoration:none;color:#0e1a2c" style-hover="background:#efece4;color:#0e1a2c">
+        <span style="font-weight:850;font-stretch:70%;font-size:clamp(40px,6vw,72px);line-height:.8;color:#f4b324">05</span>
+        <span style="min-width:0"><span style="display:block;font-weight:800;font-size:clamp(22px,2.6vw,30px)">Servicing</span><span style="display:block;margin-top:6px;font-size:16px;line-height:1.5;color:#586377;max-width:560px">Interim and full services to keep your car reliable between MOTs.</span></span>
+        <span style="text-align:right"><span style="display:block;font-weight:850;font-stretch:75%;font-size:clamp(28px,3.4vw,40px)">Call</span><span style="display:block;font-size:13px;color:#586377">for a price</span></span>
+      </a>
+      <a href="#services" style="display:grid;grid-template-columns:minmax(64px,120px) minmax(0,1fr) auto;gap:clamp(14px,3vw,40px);align-items:baseline;padding:clamp(22px,3vw,32px) 0;border-bottom:1px solid #d9d4c7;text-decoration:none;color:#0e1a2c" style-hover="background:#efece4;color:#0e1a2c">
+        <span style="font-weight:850;font-stretch:70%;font-size:clamp(40px,6vw,72px);line-height:.8;color:#f4b324">06</span>
+        <span style="min-width:0"><span style="display:block;font-weight:800;font-size:clamp(22px,2.6vw,30px)">Tuning</span><span style="display:block;margin-top:6px;font-size:16px;line-height:1.5;color:#586377;max-width:560px">Remapping for better performance or fuel economy, set up to suit how you drive.</span></span>
+        <span style="text-align:right"><span style="display:block;font-weight:850;font-stretch:75%;font-size:clamp(28px,3.4vw,40px)">Call</span><span style="display:block;font-size:13px;color:#586377">for a price</span></span>
+      </a>
+    </div>
+  </section>
+
+  <section style="background:#efece4">
+    <div style="max-width:1180px;margin:0 auto;padding:clamp(56px,8vw,96px) clamp(18px,4vw,40px)">
+      <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px">
+        <h2 style="margin:0;font-weight:850;font-stretch:72%;text-transform:uppercase;font-size:clamp(36px,5.5vw,60px);line-height:.95">What drivers say</h2>
+        <span style="font-size:13px;color:#586377">Placeholder reviews. Replace with your Google reviews.</span>
+      </div>
+      <div style="margin-top:36px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:20px">
+        <figure style="margin:0;background:#fff;border-radius:14px;padding:28px;display:flex;flex-direction:column;gap:18px">
+          <div style="color:#e0a113;font-size:18px;letter-spacing:3px">★★★★★</div>
+          <blockquote style="margin:0;font-size:18px;line-height:1.5;text-wrap:pretty">Booked online the night before, in and out within the hour. They showed me the advisories and didn't push any extra work.</blockquote>
+          <figcaption style="margin-top:auto;font-size:14px;font-weight:700">Sarah M. <span style="font-weight:400;color:#586377">· Stopsley</span></figcaption>
+        </figure>
+        <figure style="margin:0;background:#fff;border-radius:14px;padding:28px;display:flex;flex-direction:column;gap:18px">
+          <div style="color:#e0a113;font-size:18px;letter-spacing:3px">★★★★★</div>
+          <blockquote style="margin:0;font-size:18px;line-height:1.5;text-wrap:pretty">DPF light kept coming on. They cleaned the filter for a fraction of what the dealer quoted for a new one.</blockquote>
+          <figcaption style="margin-top:auto;font-size:14px;font-weight:700">Imran K. <span style="font-weight:400;color:#586377">· High Town</span></figcaption>
+        </figure>
+        <figure style="margin:0;background:#fff;border-radius:14px;padding:28px;display:flex;flex-direction:column;gap:18px">
+          <div style="color:#e0a113;font-size:18px;letter-spacing:3px">★★★★★</div>
+          <blockquote style="margin:0;font-size:18px;line-height:1.5;text-wrap:pretty">Friendly lads, fair price, and they explained everything. I've used them for three years now.</blockquote>
+          <figcaption style="margin-top:auto;font-size:14px;font-weight:700">Dave P. <span style="font-weight:400;color:#586377">· Luton</span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1180px;margin:0 auto;padding:clamp(56px,8vw,96px) clamp(18px,4vw,40px);display:flex;flex-wrap:wrap;gap:clamp(28px,4vw,56px)">
+    <div style="flex:1 1 320px;min-width:0">
+      <h2 style="margin:0;font-weight:850;font-stretch:72%;text-transform:uppercase;font-size:clamp(36px,5.5vw,60px);line-height:.95">Find us</h2>
+      <p style="margin:22px 0 0;font-size:20px;line-height:1.5;font-weight:600">21 Taylor St<br>Luton<br>LU2 0EY</p>
+      <a href="tel:01582729943" style="display:inline-block;margin-top:18px;font-weight:800;font-size:26px;color:#0f2340;text-decoration:none">01582 729943</a>
+      <div style="margin-top:28px;border-top:1px solid #d9d4c7">
+        <sc-for list="{{ hours }}" as="h" hint-placeholder-count="3">
+          <div style="display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid #d9d4c7;font-size:16px"><span>{{ h.d }}</span><span style="font-weight:700">{{ h.t }}</span></div>
+        </sc-for>
+      </div>
+    </div>
+    <img src="assets/garage-front.webp" alt="Drive Safe MOT Centre workshop on Taylor Street" style="flex:0 1 280px;min-width:0;width:100%;max-height:520px;aspect-ratio:9/16;object-fit:cover;border-radius:16px;display:block">
+    <div style="flex:2 1 420px;min-width:0;min-height:360px;border-radius:16px;overflow:hidden;background:#e6e1d6">
+      <iframe title="Map to Drive Safe MOT Centre" src="https://maps.google.com/maps?q=21%20Taylor%20St%2C%20Luton%20LU2%200EY&amp;z=16&amp;output=embed" loading="lazy" style="border:0;width:100%;height:100%;min-height:360px;display:block"></iframe>
+    </div>
+  </section>
+</sc-if>
+
+<sc-if value="{{ isServices }}">
+  <section data-screen-label="Services" style="background:#0f2340;color:#fff">
+    <div style="max-width:1180px;margin:0 auto;padding:clamp(40px,6vw,80px) clamp(18px,4vw,40px);display:flex;flex-wrap:wrap;gap:clamp(28px,4vw,56px);align-items:center">
+      <div style="flex:1 1 380px;min-width:0">
+        <div style="font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#f4b324">Services and prices</div>
+        <h1 style="margin:16px 0 0;font-weight:850;font-stretch:72%;text-transform:uppercase;font-size:clamp(36px,4.6vw,80px);line-height:.92;text-wrap:balance">Straightforward work, fair prices.</h1>
+      </div>
+      <img src="assets/tyre-change.webp" alt="Mechanic changing a car tyre" style="flex:1 1 380px;min-width:0;width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:16px;display:block">
+    </div>
+  </section>
+  <section style="max-width:1180px;margin:0 auto;padding:clamp(24px,4vw,48px) clamp(18px,4vw,40px) clamp(56px,8vw,96px);display:flex;flex-direction:column;gap:20px">
+    <article style="background:#fff;border-radius:16px;padding:clamp(24px,4vw,44px);display:flex;flex-wrap:wrap;gap:clamp(20px,4vw,48px)">
+      <div style="flex:1 1 380px;min-width:0">
+        <div style="display:flex;align-items:baseline;gap:16px"><span style="font-weight:850;font-stretch:70%;font-size:56px;line-height:.8;color:#f4b324">01</span><h2 style="margin:0;font-weight:800;font-size:clamp(28px,3.4vw,38px)">MOT test</h2></div>
+        <p style="margin:18px 0 0;font-size:17px;line-height:1.6;color:#3a4558;max-width:560px;text-wrap:pretty">A full MOT carried out to the DVSA standard. We check brakes, lights, steering, suspension, tyres, seatbelts, emissions and more, then talk you through the result and any advisories.</p>
+        <ul style="margin:20px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;font-size:16px">
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>Takes around an hour, wait or drop off</li>
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>Cars, small vans and motorhomes</li>
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>Result and advisories explained in plain English</li>
+        </ul>
+      </div>
+      <div style="flex:0 1 260px;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:20px;border-left:1px solid #e6e1d6;padding-left:clamp(0px,3vw,40px)">
+        <div><div style="font-weight:850;font-stretch:72%;font-size:72px;line-height:.85">£45</div><div style="font-size:14px;color:#586377;margin-top:6px">Fixed price</div></div>
+        <button onClick="{{ bookMot }}" style="background:#f4b324;color:#0f2340;border:0;font-weight:800;font-size:16px;padding:16px 22px;border-radius:10px;cursor:pointer;min-height:52px" style-hover="background:#ffc63d">Book an MOT</button>
+      </div>
+    </article>
+    <article style="background:#fff;border-radius:16px;padding:clamp(24px,4vw,44px);display:flex;flex-wrap:wrap;gap:clamp(20px,4vw,48px)">
+      <div style="flex:1 1 380px;min-width:0">
+        <div style="display:flex;align-items:baseline;gap:16px"><span style="font-weight:850;font-stretch:70%;font-size:56px;line-height:.8;color:#f4b324">02</span><h2 style="margin:0;font-weight:800;font-size:clamp(28px,3.4vw,38px)">DPF clean</h2></div>
+        <p style="margin:18px 0 0;font-size:17px;line-height:1.6;color:#3a4558;max-width:560px;text-wrap:pretty">If your diesel is showing a DPF warning light, going into limp mode or losing power, a blocked diesel particulate filter is a common cause. We clean the filter to restore flow, which is often far cheaper than replacing it.</p>
+        <ul style="margin:20px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;font-size:16px">
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>For diesel cars and vans</li>
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>Warning light and fault code check</li>
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>Helps with emissions on your MOT</li>
+        </ul>
+      </div>
+      <div style="flex:0 1 260px;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:20px;border-left:1px solid #e6e1d6;padding-left:clamp(0px,3vw,40px)">
+        <div><div style="font-size:14px;color:#586377">From</div><div style="font-weight:850;font-stretch:72%;font-size:72px;line-height:.85">£150</div></div>
+        <button onClick="{{ bookDpf }}" style="background:#f4b324;color:#0f2340;border:0;font-weight:800;font-size:16px;padding:16px 22px;border-radius:10px;cursor:pointer;min-height:52px" style-hover="background:#ffc63d">Book a DPF clean</button>
+      </div>
+    </article>
+    <article style="background:#fff;border-radius:16px;padding:clamp(24px,4vw,44px);display:flex;flex-wrap:wrap;gap:clamp(20px,4vw,48px)">
+      <div style="flex:1 1 380px;min-width:0">
+        <div style="display:flex;align-items:baseline;gap:16px"><span style="font-weight:850;font-stretch:70%;font-size:56px;line-height:.8;color:#f4b324">03</span><h2 style="margin:0;font-weight:800;font-size:clamp(28px,3.4vw,38px)">MOT works</h2></div>
+        <p style="margin:18px 0 0;font-size:17px;line-height:1.6;color:#3a4558;max-width:560px;text-wrap:pretty">Failed your MOT, or have advisories you'd like sorted? We carry out the repairs needed to get your vehicle through, and give you a price before any work begins.</p>
+        <ul style="margin:20px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;font-size:16px">
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>Brakes, tyres, lights and wipers</li>
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>Suspension, steering and exhausts</li>
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>Retest after repairs</li>
+        </ul>
+      </div>
+      <div style="flex:0 1 260px;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:20px;border-left:1px solid #e6e1d6;padding-left:clamp(0px,3vw,40px)">
+        <div><div style="font-weight:850;font-stretch:72%;font-size:56px;line-height:.85">Quoted</div><div style="font-size:14px;color:#586377;margin-top:6px">Before any work starts</div></div>
+        <button onClick="{{ bookRepair }}" style="background:#f4b324;color:#0f2340;border:0;font-weight:800;font-size:16px;padding:16px 22px;border-radius:10px;cursor:pointer;min-height:52px" style-hover="background:#ffc63d">Book a repair check</button>
+      </div>
+    </article>
+    <article style="background:#fff;border-radius:16px;padding:clamp(24px,4vw,44px);display:flex;flex-wrap:wrap;gap:clamp(20px,4vw,48px)">
+      <div style="flex:1 1 380px;min-width:0">
+        <div style="display:flex;align-items:baseline;gap:16px"><span style="font-weight:850;font-stretch:70%;font-size:56px;line-height:.8;color:#f4b324">04</span><h2 style="margin:0;font-weight:800;font-size:clamp(28px,3.4vw,38px)">Tyre change</h2></div>
+        <p style="margin:18px 0 0;font-size:17px;line-height:1.6;color:#3a4558;max-width:560px;text-wrap:pretty">Worn tread, a puncture or a tyre that failed the MOT? We supply and fit new tyres, balance the wheels and set your pressures before you drive away.</p>
+        <ul style="margin:20px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;font-size:16px">
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>Supply and fit, most sizes</li>
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>Wheel balancing</li>
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>Puncture repairs where safe</li>
+        </ul>
+      </div>
+      <div style="flex:0 1 260px;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:20px;border-left:1px solid #e6e1d6;padding-left:clamp(0px,3vw,40px)">
+        <div><div style="font-weight:850;font-stretch:72%;font-size:56px;line-height:.85">Call</div><div style="font-size:14px;color:#586377;margin-top:6px">Priced by tyre size</div></div>
+        <button onClick="{{ bookTyres }}" style="background:#f4b324;color:#0f2340;border:0;font-weight:800;font-size:16px;padding:16px 22px;border-radius:10px;cursor:pointer;min-height:52px" style-hover="background:#ffc63d">Book a tyre change</button>
+      </div>
+    </article>
+    <article style="background:#fff;border-radius:16px;padding:clamp(24px,4vw,44px);display:flex;flex-wrap:wrap;gap:clamp(20px,4vw,48px)">
+      <div style="flex:1 1 380px;min-width:0">
+        <div style="display:flex;align-items:baseline;gap:16px"><span style="font-weight:850;font-stretch:70%;font-size:56px;line-height:.8;color:#f4b324">05</span><h2 style="margin:0;font-weight:800;font-size:clamp(28px,3.4vw,38px)">Servicing</h2></div>
+        <p style="margin:18px 0 0;font-size:17px;line-height:1.6;color:#3a4558;max-width:560px;text-wrap:pretty">Regular servicing keeps your car reliable and helps it through its next MOT. We offer interim and full services, with an oil change, new filters and a full safety check.</p>
+        <ul style="margin:20px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;font-size:16px">
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>Interim and full services</li>
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>Oil and filter change</li>
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>Fluids, brakes and lights checked</li>
+        </ul>
+      </div>
+      <div style="flex:0 1 260px;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:20px;border-left:1px solid #e6e1d6;padding-left:clamp(0px,3vw,40px)">
+        <div><div style="font-weight:850;font-stretch:72%;font-size:56px;line-height:.85">Call</div><div style="font-size:14px;color:#586377;margin-top:6px">Priced by vehicle</div></div>
+        <button onClick="{{ bookService }}" style="background:#f4b324;color:#0f2340;border:0;font-weight:800;font-size:16px;padding:16px 22px;border-radius:10px;cursor:pointer;min-height:52px" style-hover="background:#ffc63d">Book a service</button>
+      </div>
+    </article>
+    <article style="background:#fff;border-radius:16px;padding:clamp(24px,4vw,44px);display:flex;flex-wrap:wrap;gap:clamp(20px,4vw,48px)">
+      <div style="flex:1 1 380px;min-width:0">
+        <div style="display:flex;align-items:baseline;gap:16px"><span style="font-weight:850;font-stretch:70%;font-size:56px;line-height:.8;color:#f4b324">06</span><h2 style="margin:0;font-weight:800;font-size:clamp(28px,3.4vw,38px)">Tuning</h2></div>
+        <p style="margin:18px 0 0;font-size:17px;line-height:1.6;color:#3a4558;max-width:560px;text-wrap:pretty">Engine remapping to improve performance or fuel economy, set up to suit your vehicle and how you drive.</p>
+        <ul style="margin:20px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;font-size:16px">
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>ECU remapping</li>
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>Performance and economy options</li>
+          <li style="display:flex;gap:10px"><span style="color:#e0a113;font-weight:800">✓</span>Diagnostics before and after</li>
+        </ul>
+      </div>
+      <div style="flex:0 1 260px;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:20px;border-left:1px solid #e6e1d6;padding-left:clamp(0px,3vw,40px)">
+        <div><div style="font-weight:850;font-stretch:72%;font-size:56px;line-height:.85">Call</div><div style="font-size:14px;color:#586377;margin-top:6px">Priced by vehicle</div></div>
+        <button onClick="{{ bookTuning }}" style="background:#f4b324;color:#0f2340;border:0;font-weight:800;font-size:16px;padding:16px 22px;border-radius:10px;cursor:pointer;min-height:52px" style-hover="background:#ffc63d">Book tuning</button>
+      </div>
+    </article>
+    <div style="margin-top:12px;padding:24px clamp(20px,3vw,32px);border-radius:14px;border:1.5px dashed #c9c2b2;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between">
+      <span style="font-size:17px;font-weight:600">Not sure what you need? Give us a ring and we'll talk it through.</span>
+      <a href="tel:01582729943" style="font-weight:800;font-size:20px;color:#0f2340;text-decoration:none">01582 729943</a>
+    </div>
+  </section>
+</sc-if>
+
+<sc-if value="{{ isBook }}">
+  <section data-screen-label="Book" style="background:#0f2340;color:#fff">
+    <div style="max-width:1180px;margin:0 auto;padding:clamp(36px,5vw,64px) clamp(18px,4vw,40px)">
+      <div style="font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#f4b324">Online booking</div>
+      <h1 style="margin:14px 0 0;font-weight:850;font-stretch:72%;text-transform:uppercase;font-size:clamp(44px,7vw,80px);line-height:.92">Book your slot</h1>
+      <p style="margin:16px 0 0;font-size:17px;line-height:1.5;color:#c9d2e2;max-width:560px">Choose a one-hour slot between 9am and 5pm, from tomorrow onwards.</p>
+    </div>
+  </section>
+
+  <sc-if value="{{ notDone }}" hint-placeholder-val="{{ true }}">
+  <section style="max-width:1180px;margin:0 auto;padding:clamp(24px,4vw,48px) clamp(18px,4vw,40px) clamp(56px,8vw,96px);display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+    <div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:20px">
+
+      <div style="background:#fff;border-radius:16px;padding:clamp(20px,3.5vw,36px)">
+        <div style="display:flex;align-items:center;gap:12px"><span style="width:32px;height:32px;border-radius:50%;background:#0f2340;color:#f4b324;display:grid;place-items:center;font-weight:800;font-size:15px;flex:none">1</span><h2 style="margin:0;font-size:22px;font-weight:800">What do you need?</h2></div>
+        <div style="margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px">
+          <button onClick="{{ pickMot }}" style="text-align:left;padding:18px;border-radius:12px;border:2px solid {{ svc.mot.border }};background:{{ svc.mot.bg }};cursor:pointer;display:flex;flex-direction:column;gap:6px;min-height:88px;color:#0e1a2c">
+            <span style="font-weight:800;font-size:17px">MOT test</span><span style="font-size:15px;color:#586377">£45 fixed</span>
+          </button>
+          <button onClick="{{ pickDpf }}" style="text-align:left;padding:18px;border-radius:12px;border:2px solid {{ svc.dpf.border }};background:{{ svc.dpf.bg }};cursor:pointer;display:flex;flex-direction:column;gap:6px;min-height:88px;color:#0e1a2c">
+            <span style="font-weight:800;font-size:17px">DPF clean</span><span style="font-size:15px;color:#586377">From £150</span>
+          </button>
+          <button onClick="{{ pickRepair }}" style="text-align:left;padding:18px;border-radius:12px;border:2px solid {{ svc.repair.border }};background:{{ svc.repair.bg }};cursor:pointer;display:flex;flex-direction:column;gap:6px;min-height:88px;color:#0e1a2c">
+            <span style="font-weight:800;font-size:17px">MOT works</span><span style="font-size:15px;color:#586377">Quoted on inspection</span>
+          </button>
+          <button onClick="{{ pickTyres }}" style="text-align:left;padding:18px;border-radius:12px;border:2px solid {{ svc.tyres.border }};background:{{ svc.tyres.bg }};cursor:pointer;display:flex;flex-direction:column;gap:6px;min-height:88px;color:#0e1a2c">
+            <span style="font-weight:800;font-size:17px">Tyre change</span><span style="font-size:15px;color:#586377">Priced by tyre size</span>
+          </button>
+          <button onClick="{{ pickService }}" style="text-align:left;padding:18px;border-radius:12px;border:2px solid {{ svc.service.border }};background:{{ svc.service.bg }};cursor:pointer;display:flex;flex-direction:column;gap:6px;min-height:88px;color:#0e1a2c">
+            <span style="font-weight:800;font-size:17px">Servicing</span><span style="font-size:15px;color:#586377">Priced by vehicle</span>
+          </button>
+          <button onClick="{{ pickTuning }}" style="text-align:left;padding:18px;border-radius:12px;border:2px solid {{ svc.tuning.border }};background:{{ svc.tuning.bg }};cursor:pointer;display:flex;flex-direction:column;gap:6px;min-height:88px;color:#0e1a2c">
+            <span style="font-weight:800;font-size:17px">Tuning</span><span style="font-size:15px;color:#586377">Priced by vehicle</span>
+          </button>
+        </div>
+      </div>
+
+      <div style="background:#fff;border-radius:16px;padding:clamp(20px,3.5vw,36px)">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:12px"><span style="width:32px;height:32px;border-radius:50%;background:#0f2340;color:#f4b324;display:grid;place-items:center;font-weight:800;font-size:15px;flex:none">2</span><h2 style="margin:0;font-size:22px;font-weight:800">Pick a day</h2></div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <button onClick="{{ prevMonth }}" aria-label="Previous month" style="width:44px;height:44px;border-radius:10px;border:1px solid #d9d4c7;background:#fff;font-size:18px;cursor:pointer;opacity:{{ prevOpacity }};color:#0e1a2c">‹</button>
+            <span style="min-width:136px;text-align:center;font-weight:700;font-size:16px">{{ monthLabel }}</span>
+            <button onClick="{{ nextMonth }}" aria-label="Next month" style="width:44px;height:44px;border-radius:10px;border:1px solid #d9d4c7;background:#fff;font-size:18px;cursor:pointer;opacity:{{ nextOpacity }};color:#0e1a2c">›</button>
+          </div>
+        </div>
+        <div style="margin-top:22px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px">
+          <sc-for list="{{ weekdays }}" as="w" hint-placeholder-count="7">
+            <div style="text-align:center;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#586377;padding-bottom:6px">{{ w }}</div>
+          </sc-for>
+          <sc-for list="{{ cells }}" as="c" hint-placeholder-count="35">
+            <button onClick="{{ c.onClick }}" disabled="{{ c.disabled }}" style="height:clamp(44px,7vw,56px);border-radius:10px;border:1.5px solid {{ c.border }};background:{{ c.bg }};color:{{ c.color }};font-weight:{{ c.weight }};font-size:16px;cursor:{{ c.cursor }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0;text-decoration:{{ c.deco }}">
+              <span>{{ c.label }}</span>
+              <span style="font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;line-height:1">{{ c.sub }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:8px 20px;font-size:13px;color:#586377">
+          <span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:14px;border-radius:4px;border:1.5px solid #c9c2b2;background:#fff"></span>Available</span>
+          <span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:14px;border-radius:4px;background:#0f2340"></span>Selected</span>
+          <span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:14px;border-radius:4px;background:#f1eee7"></span>Closed or fully booked</span>
+        </div>
+      </div>
+
+      <div style="background:#fff;border-radius:16px;padding:clamp(20px,3.5vw,36px)">
+        <div style="display:flex;align-items:center;gap:12px"><span style="width:32px;height:32px;border-radius:50%;background:#0f2340;color:#f4b324;display:grid;place-items:center;font-weight:800;font-size:15px;flex:none">3</span><h2 style="margin:0;font-size:22px;font-weight:800">Choose a time</h2></div>
+        <sc-if value="{{ noDate }}" hint-placeholder-val="{{ true }}">
+          <p style="margin:18px 0 0;font-size:16px;color:#586377">Pick a day above to see available times.</p>
+        </sc-if>
+        <sc-if value="{{ date }}">
+          <p style="margin:14px 0 0;font-size:16px;color:#586377">{{ dateLabel }}</p>
+          <div style="margin-top:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px">
+            <sc-for list="{{ slots }}" as="s" hint-placeholder-count="8">
+              <button onClick="{{ s.onClick }}" disabled="{{ s.disabled }}" style="min-height:56px;border-radius:10px;border:1.5px solid {{ s.border }};background:{{ s.bg }};color:{{ s.color }};cursor:{{ s.cursor }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px">
+                <span style="font-weight:800;font-size:17px;text-decoration:{{ s.deco }}">{{ s.label }}</span>
+                <span style="font-size:12px">{{ s.sub }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ errors.when }}">
+          <p style="margin:14px 0 0;font-size:15px;font-weight:600;color:#b4321f">{{ errors.when }}</p>
+        </sc-if>
+      </div>
+
+      <div style="background:#fff;border-radius:16px;padding:clamp(20px,3.5vw,36px)">
+        <div style="display:flex;align-items:center;gap:12px"><span style="width:32px;height:32px;border-radius:50%;background:#0f2340;color:#f4b324;display:grid;place-items:center;font-weight:800;font-size:15px;flex:none">4</span><h2 style="margin:0;font-size:22px;font-weight:800">Your details</h2></div>
+        <div style="margin-top:22px;display:flex;flex-direction:column;gap:8px">
+          <label style="font-size:14px;font-weight:700">Vehicle registration</label>
+          <div style="display:flex;max-width:340px;border:2px solid #111;border-radius:8px;overflow:hidden;background:#f7d117">
+            <span style="width:40px;background:#1d3fa0;color:#fff;font-weight:800;font-size:13px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;flex:none">UK</span>
+            <input value="{{ form.reg }}" onChange="{{ onReg }}" placeholder="AB12 CDE" maxlength="8" autocomplete="off" style="flex:1;min-width:0;border:0;background:transparent;padding:12px 14px;font-size:30px;font-weight:800;font-stretch:85%;letter-spacing:.08em;text-align:center;text-transform:uppercase;color:#111;outline:none">
+          </div>
+          <sc-if value="{{ errors.reg }}"><span style="font-size:14px;font-weight:600;color:#b4321f">{{ errors.reg }}</span></sc-if>
+        </div>
+        <div style="margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:18px">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <label style="font-size:14px;font-weight:700">Full name</label>
+            <input value="{{ form.name }}" onChange="{{ onName }}" autocomplete="name" style="height:52px;border-radius:10px;border:1.5px solid {{ borders.name }};padding:0 14px;font-size:17px;background:#fff;color:#0e1a2c" style-focus="outline:2px solid #f4b324;outline-offset:1px">
+            <sc-if value="{{ errors.name }}"><span style="font-size:14px;font-weight:600;color:#b4321f">{{ errors.name }}</span></sc-if>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <label style="font-size:14px;font-weight:700">Phone</label>
+            <input value="{{ form.phone }}" onChange="{{ onPhone }}" type="tel" autocomplete="tel" style="height:52px;border-radius:10px;border:1.5px solid {{ borders.phone }};padding:0 14px;font-size:17px;background:#fff;color:#0e1a2c" style-focus="outline:2px solid #f4b324;outline-offset:1px">
+            <sc-if value="{{ errors.phone }}"><span style="font-size:14px;font-weight:600;color:#b4321f">{{ errors.phone }}</span></sc-if>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;grid-column:1/-1">
+            <label style="font-size:14px;font-weight:700">Email</label>
+            <input value="{{ form.email }}" onChange="{{ onEmail }}" type="email" autocomplete="email" style="height:52px;border-radius:10px;border:1.5px solid {{ borders.email }};padding:0 14px;font-size:17px;background:#fff;color:#0e1a2c" style-focus="outline:2px solid #f4b324;outline-offset:1px">
+            <sc-if value="{{ errors.email }}"><span style="font-size:14px;font-weight:600;color:#b4321f">{{ errors.email }}</span></sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside style="flex:1 1 300px;min-width:0;position:sticky;top:92px;background:#0f2340;color:#fff;border-radius:16px;padding:28px">
+      <div style="font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#f4b324">Your booking</div>
+      <div style="margin-top:18px;display:flex;flex-direction:column">
+        <div style="display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.12)"><span style="color:#c9d2e2;font-size:15px">Service</span><span style="font-weight:700;font-size:15px;text-align:right">{{ summary.service }}</span></div>
+        <div style="display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.12)"><span style="color:#c9d2e2;font-size:15px">Day</span><span style="font-weight:700;font-size:15px;text-align:right">{{ summary.day }}</span></div>
+        <div style="display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.12)"><span style="color:#c9d2e2;font-size:15px">Time</span><span style="font-weight:700;font-size:15px;text-align:right">{{ summary.time }}</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:18px 0 4px"><span style="color:#c9d2e2;font-size:15px">Price</span><span style="font-weight:850;font-stretch:75%;font-size:40px;color:#f4b324">{{ summary.price }}</span></div>
+      </div>
+      <button onClick="{{ confirm }}" style="margin-top:18px;width:100%;min-height:58px;border:0;border-radius:10px;background:#f4b324;color:#0f2340;font-weight:800;font-size:18px;cursor:pointer" style-hover="background:#ffc63d">Confirm booking</button>
+      <p style="margin:16px 0 0;font-size:14px;line-height:1.5;color:#c9d2e2">Pay on the day. Need to change your slot? Call <a href="tel:01582729943" style="color:#fff;font-weight:700">01582 729943</a>.</p>
+    </aside>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ done }}">
+    <section style="max-width:720px;margin:0 auto;padding:clamp(32px,5vw,64px) clamp(18px,4vw,40px) clamp(56px,8vw,96px)">
+      <div style="background:#fff;border-radius:18px;padding:clamp(28px,5vw,48px);text-align:center">
+        <div style="width:72px;height:72px;margin:0 auto;border-radius:50%;background:#1f7a4d;display:grid;place-items:center">
+          <svg width="40" height="40" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7" style="fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round"></path></svg>
+        </div>
+        <h2 style="margin:22px 0 0;font-weight:850;font-stretch:72%;text-transform:uppercase;font-size:clamp(36px,5vw,52px);line-height:.95">You're booked in</h2>
+        <p style="margin:12px 0 0;font-size:17px;color:#586377">Thanks {{ done.first }}. We've sent a confirmation to {{ done.email }}.</p>
+        <div style="margin:28px auto 0;max-width:440px;text-align:left;border-top:1px solid #e6e1d6">
+          <div style="display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid #e6e1d6"><span style="color:#586377">Reference</span><span style="font-weight:800;letter-spacing:.04em">{{ done.ref }}</span></div>
+          <div style="display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid #e6e1d6"><span style="color:#586377">Service</span><span style="font-weight:700">{{ done.service }}</span></div>
+          <div style="display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid #e6e1d6"><span style="color:#586377">When</span><span style="font-weight:700;text-align:right">{{ done.when }}</span></div>
+          <div style="display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid #e6e1d6"><span style="color:#586377">Vehicle</span><span style="font-weight:800;background:#f7d117;padding:2px 10px;border-radius:4px;border:1.5px solid #111;letter-spacing:.06em">{{ done.reg }}</span></div>
+          <div style="display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid #e6e1d6"><span style="color:#586377">Where</span><span style="font-weight:700;text-align:right">21 Taylor St, Luton LU2 0EY</span></div>
+        </div>
+        <div style="margin-top:30px;display:flex;flex-wrap:wrap;gap:12px;justify-content:center">
+          <a href="#home" style="padding:15px 22px;border-radius:10px;background:#0f2340;color:#fff;text-decoration:none;font-weight:700" style-hover="background:#16305a;color:#fff">Back to home</a>
+          <button onClick="{{ reset }}" style="padding:15px 22px;border-radius:10px;background:#fff;border:1.5px solid #c9c2b2;color:#0e1a2c;font-weight:700;font-size:16px;cursor:pointer">Make another booking</button>
+        </div>
+      </div>
+    </section>
+  </sc-if>
+</sc-if>
+
+<sc-if value="{{ isContact }}">
+  <section data-screen-label="Contact" style="background:#0f2340;color:#fff">
+    <div style="max-width:1180px;margin:0 auto;padding:clamp(40px,6vw,80px) clamp(18px,4vw,40px)">
+      <div style="font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#f4b324">Contact</div>
+      <h1 style="margin:16px 0 0;font-weight:850;font-stretch:72%;text-transform:uppercase;font-size:clamp(44px,8vw,88px);line-height:.92">Come and see us</h1>
+    </div>
+  </section>
+  <section style="max-width:1180px;margin:0 auto;padding:clamp(24px,4vw,48px) clamp(18px,4vw,40px) clamp(56px,8vw,96px);display:flex;flex-wrap:wrap;gap:20px;align-items:stretch">
+    <div style="flex:1 1 340px;min-width:0;display:flex;flex-direction:column;gap:20px">
+      <a href="tel:01582729943" style="background:#f4b324;color:#0f2340;border-radius:16px;padding:28px;text-decoration:none;display:flex;flex-direction:column;gap:8px" style-hover="background:#ffc63d;color:#0f2340">
+        <span style="font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase">Call us</span>
+        <span style="font-weight:850;font-stretch:75%;font-size:clamp(36px,5vw,48px);line-height:1">01582 729943</span>
+        <span style="font-size:15px">Tap to call on mobile</span>
+      </a>
+      <div style="background:#fff;border-radius:16px;padding:28px">
+        <div style="font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#586377">Address</div>
+        <p style="margin:12px 0 0;font-size:22px;line-height:1.4;font-weight:700">21 Taylor St<br>Luton LU2 0EY</p>
+        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=21%20Taylor%20St%2C%20Luton%20LU2%200EY" target="_blank" rel="noopener" style="display:inline-block;margin-top:14px;font-weight:700;font-size:16px">Get directions →</a>
+      </div>
+      <div style="background:#fff;border-radius:16px;padding:28px">
+        <div style="font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#586377">Opening hours</div>
+        <div style="margin-top:10px">
+          <sc-for list="{{ hours }}" as="h" hint-placeholder-count="3">
+            <div style="display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid #e6e1d6;font-size:16px"><span>{{ h.d }}</span><span style="font-weight:700">{{ h.t }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+    <div style="flex:2 1 440px;min-width:0;min-height:420px;border-radius:16px;overflow:hidden;background:#e6e1d6">
+      <iframe title="Map to Drive Safe MOT Centre" src="https://maps.google.com/maps?q=21%20Taylor%20St%2C%20Luton%20LU2%200EY&amp;z=16&amp;output=embed" loading="lazy" style="border:0;width:100%;height:100%;min-height:420px;display:block"></iframe>
+    </div>
+  </section>
+</sc-if>
+</main>
+
+<footer style="background:#0a1a31;color:#c9d2e2">
+  <div style="max-width:1180px;margin:0 auto;padding:44px clamp(18px,4vw,40px);display:flex;flex-wrap:wrap;gap:28px 48px;justify-content:space-between">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <span style="font-weight:800;font-stretch:78%;font-size:22px;text-transform:uppercase;color:#fff">Drive Safe MOT Centre</span>
+      <span style="font-size:15px">21 Taylor St, Luton LU2 0EY</span>
+      <a href="tel:01582729943" style="font-size:15px;color:#fff;font-weight:700;text-decoration:none">01582 729943</a>
+    </div>
+    <nav style="display:flex;flex-wrap:wrap;gap:8px 24px;align-items:flex-start">
+      <a href="#home" style="color:#c9d2e2;text-decoration:none;font-size:15px" style-hover="color:#fff">Home</a>
+      <a href="#services" style="color:#c9d2e2;text-decoration:none;font-size:15px" style-hover="color:#fff">Services</a>
+      <a href="#book" style="color:#c9d2e2;text-decoration:none;font-size:15px" style-hover="color:#fff">Book</a>
+      <a href="#contact" style="color:#c9d2e2;text-decoration:none;font-size:15px" style-hover="color:#fff">Contact</a>
+    </nav>
+  </div>
+  <div style="max-width:1180px;margin:0 auto;padding:18px clamp(18px,4vw,40px) 28px;border-top:1px solid rgba(255,255,255,.08);font-size:13px">© 2026 Drive Safe MOT Centre</div>
+  <sc-if value="{{ isMobile }}"><div style="height:80px"></div></sc-if>
+</footer>
+
+<sc-if value="{{ isMobile }}">
+  <div style="position:fixed;left:0;right:0;bottom:0;z-index:40;background:#fff;border-top:1px solid #e6e1d6;padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;gap:10px;box-shadow:0 -6px 20px rgba(15,35,64,.08)">
+    <a href="tel:01582729943" style="flex:1;min-height:52px;border-radius:10px;border:1.5px solid #0f2340;color:#0f2340;text-decoration:none;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center">Call us</a>
+    <sc-if value="{{ showBottomBook }}">
+      <a href="#book" style="flex:1;min-height:52px;border-radius:10px;background:#f4b324;color:#0f2340;text-decoration:none;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center">Book MOT</a>
+    </sc-if>
+  </div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;openSaturday&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Booking&quot;},&quot;bookingWeeks&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;2&quot;,&quot;4&quot;,&quot;8&quot;],&quot;default&quot;:&quot;4&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Booking&quot;},&quot;showBooked&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Booking&quot;}}">
+const NAVY = '#0f2340', AMBER = '#f4b324';
+const PAGES = ['home', 'services', 'book', 'contact'];
+const HOURS = [9, 10, 11, 12, 13, 14, 15, 16];
+const SERVICES = { mot: { name: 'MOT test', price: '£45' }, dpf: { name: 'DPF clean', price: 'from £150' }, repair: { name: 'MOT works', price: 'Quoted' },
+  tyres: { name: 'Tyre change', price: 'Call' }, service: { name: 'Servicing', price: 'Call' }, tuning: { name: 'Tuning', price: 'Call' } };
+const pad = n => String(n).padStart(2, '0');
+const isoOf = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const fromIso = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const h32 = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0) % 100; };
+const fmtLong = d => d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+const fmtShort = d => d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+const pageFromHash = () => { const p = (location.hash || '').slice(1); return PAGES.includes(p) ? p : 'home'; };
+
+class Component extends DCLogic {
+  state = { page: pageFromHash(), vw: window.innerWidth, menu: false, service: 'mot', month: 0, date: null, slot: null,
+    form: { name: '', phone: '', email: '', reg: '' }, errors: {}, done: null };
+
+  componentDidMount() {
+    this.onHash = () => { this.setState({ page: pageFromHash(), menu: false }); window.scrollTo(0, 0); };
+    this.onResize = () => this.setState({ vw: window.innerWidth });
+    window.addEventListener('hashchange', this.onHash);
+    window.addEventListener('resize', this.onResize);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('hashchange', this.onHash);
+    window.removeEventListener('resize', this.onResize);
+  }
+  go(p) { if (location.hash === '#' + p) { this.setState({ page: p, menu: false }); window.scrollTo(0, 0); } else location.hash = p; }
+
+  range() {
+    const s = new Date(); s.setHours(0, 0, 0, 0); s.setDate(s.getDate() + 1);
+    const weeks = parseInt(this.props.bookingWeeks ?? '4', 10);
+    const e = new Date(s); e.setDate(s.getDate() + weeks * 7 - 1);
+    return { start: s, end: e };
+  }
+  isOpen(d) { const w = d.getDay(); if (w === 0) return false; if (w === 6) return this.props.openSaturday ?? true; return true; }
+  isTaken(iso, h) { return (this.props.showBooked ?? true) && h32(iso + ':' + h) < 30; }
+  freeCount(iso) { return HOURS.filter(h => !this.isTaken(iso, h)).length; }
+  inRange(d, r) { return d >= r.start && d <= r.end; }
+
+  setField(k, v) { this.setState(s => ({ form: { ...s.form, [k]: v }, errors: { ...s.errors, [k]: null } })); }
+  pickService(id) { this.setState({ service: id }); }
+  bookAs(id) { this.setState({ service: id, done: null }); this.go('book'); }
+
+  confirm() {
+    const { form, date, slot } = this.state, e = {};
+    if (!date || slot == null) e.when = 'Please choose a day and time.';
+    if (form.reg.replace(/\s/g, '').length < 2) e.reg = 'Enter your registration.';
+    if (!form.name.trim()) e.name = 'Enter your name.';
+    if (form.phone.replace(/\D/g, '').length < 10) e.phone = 'Enter a valid phone number.';
+    if (!/^\S+@\S+\.\S+$/.test(form.email.trim())) e.email = 'Enter a valid email address.';
+    if (Object.keys(e).length) { this.setState({ errors: e }); return; }
+    const ref = 'DS-' + Math.random().toString(36).slice(2, 7).toUpperCase();
+    this.setState({ done: { ref, first: form.name.trim().split(' ')[0], email: form.email.trim(), reg: form.reg.toUpperCase(),
+      service: SERVICES[this.state.service].name, when: fmtLong(fromIso(date)) + ', ' + pad(slot) + ':00' } });
+    window.scrollTo(0, 0);
+  }
+  reset() { this.setState({ done: null, date: null, slot: null, errors: {}, form: { name: '', phone: '', email: '', reg: '' } }); }
+
+  renderVals() {
+    const st = this.state, mobile = st.vw < 1040, r = this.range();
+    const nav = [['home', 'Home'], ['services', 'Services'], ['book', 'Book'], ['contact', 'Contact']].map(([id, label]) => ({
+      label, href: '#' + id, color: st.page === id ? '#fff' : (mobile ? '#c9d2e2' : '#b9c4d8'), border: st.page === id && !mobile ? AMBER : 'transparent' }));
+
+    const months = [];
+    for (let d = new Date(r.start.getFullYear(), r.start.getMonth(), 1); d <= r.end; d = new Date(d.getFullYear(), d.getMonth() + 1, 1)) months.push(d);
+    const mi = Math.min(st.month, months.length - 1), m0 = months[mi];
+    const cells = [], lead = (m0.getDay() + 6) % 7, dim = new Date(m0.getFullYear(), m0.getMonth() + 1, 0).getDate();
+    for (let i = 0; i < lead; i++) cells.push({ label: '', sub: '', disabled: true, bg: 'transparent', border: 'transparent', color: 'transparent', cursor: 'default', weight: 400, deco: 'none' });
+    for (let day = 1; day <= dim; day++) {
+      const d = new Date(m0.getFullYear(), m0.getMonth(), day), iso = isoOf(d);
+      const inR = this.inRange(d, r), open = this.isOpen(d), free = inR && open ? this.freeCount(iso) : 0;
+      const ok = inR && open && free > 0, sel = st.date === iso;
+      let sub = '';
+      if (inR && !open) sub = 'Closed'; else if (inR && open && !free) sub = 'Full'; else if (ok && free <= 2) sub = free + ' left';
+      cells.push({ label: String(day), sub, disabled: !ok,
+        bg: sel ? NAVY : ok ? '#fff' : inR ? '#f1eee7' : 'transparent',
+        border: sel ? NAVY : ok ? '#c9c2b2' : 'transparent',
+        color: sel ? '#fff' : ok ? '#0e1a2c' : '#a3a8b3',
+        cursor: ok ? 'pointer' : 'default', weight: ok ? 700 : 500, deco: 'none',
+        onClick: () => ok && this.setState({ date: iso, slot: null, errors: { ...st.errors, when: null } }) });
+    }
+
+    const slots = st.date ? HOURS.map(h => {
+      const taken = this.isTaken(st.date, h), sel = st.slot === h;
+      return { label: pad(h) + ':00', sub: taken ? 'Booked' : 'until ' + pad(h + 1) + ':00', disabled: taken,
+        bg: sel ? NAVY : taken ? '#f1eee7' : '#fff', border: sel ? NAVY : taken ? 'transparent' : '#c9c2b2',
+        color: sel ? '#fff' : taken ? '#a3a8b3' : '#0e1a2c', cursor: taken ? 'default' : 'pointer', deco: taken ? 'line-through' : 'none',
+        onClick: () => !taken && this.setState({ slot: h, errors: { ...st.errors, when: null } }) };
+    }) : [];
+
+    let nextSlot = 'Call us to check';
+    for (let d = new Date(r.start); d <= r.end; d.setDate(d.getDate() + 1)) {
+      if (!this.isOpen(d)) continue;
+      const iso = isoOf(d), h = HOURS.find(x => !this.isTaken(iso, x));
+      if (h != null) { nextSlot = fmtShort(d) + ', ' + pad(h) + ':00'; break; }
+    }
+
+    const sat = this.props.openSaturday ?? true;
+    const svcStyle = id => ({ border: st.service === id ? NAVY : '#e6e1d6', bg: st.service === id ? '#fdf6e3' : '#fff' });
+    const err = st.errors, bd = k => err[k] ? '#b4321f' : '#c9c2b2';
+    const svc = SERVICES[st.service];
+
+    return {
+      isDesktop: !mobile, isMobile: mobile, menuShown: mobile && st.menu, nav,
+      toggleMenu: () => this.setState(s => ({ menu: !s.menu })),
+      isHome: st.page === 'home', isServices: st.page === 'services', isBook: st.page === 'book', isContact: st.page === 'contact',
+      showBottomBook: st.page !== 'book',
+      nextSlot,
+      hours: [{ d: 'Monday – Friday', t: '9:00 – 17:00' }, { d: 'Saturday', t: sat ? '9:00 – 17:00' : 'Closed' }, { d: 'Sunday', t: 'Closed' }],
+      bookMot: () => this.bookAs('mot'), bookDpf: () => this.bookAs('dpf'), bookRepair: () => this.bookAs('repair'),
+      bookTyres: () => this.bookAs('tyres'), bookService: () => this.bookAs('service'), bookTuning: () => this.bookAs('tuning'),
+      pickMot: () => this.pickService('mot'), pickDpf: () => this.pickService('dpf'), pickRepair: () => this.pickService('repair'),
+      pickTyres: () => this.pickService('tyres'), pickService: () => this.pickService('service'), pickTuning: () => this.pickService('tuning'),
+      svc: Object.fromEntries(Object.keys(SERVICES).map(k => [k, svcStyle(k)])),
+      monthLabel: m0.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }),
+      prevOpacity: mi > 0 ? 1 : 0.3, nextOpacity: mi < months.length - 1 ? 1 : 0.3,
+      prevMonth: () => mi > 0 && this.setState({ month: mi - 1 }),
+      nextMonth: () => mi < months.length - 1 && this.setState({ month: mi + 1 }),
+      weekdays: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'], cells,
+      date: st.date, noDate: !st.date, dateLabel: st.date ? fmtLong(fromIso(st.date)) : '', slots,
+      form: st.form, errors: err, borders: { name: bd('name'), phone: bd('phone'), email: bd('email') },
+      onName: e => this.setField('name', e.target.value), onPhone: e => this.setField('phone', e.target.value),
+      onEmail: e => this.setField('email', e.target.value), onReg: e => this.setField('reg', e.target.value.toUpperCase()),
+      summary: { service: svc.name, price: svc.price, day: st.date ? fmtShort(fromIso(st.date)) : '—', time: st.slot != null ? pad(st.slot) + ':00 – ' + pad(st.slot + 1) + ':00' : '—' },
+      confirm: () => this.confirm(), reset: () => this.reset(),
+      notDone: !st.done, done: st.done,
+    };
+  }
+}
+</script>
+</body>
+</html>
