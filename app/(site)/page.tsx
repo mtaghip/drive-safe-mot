@@ -1,9 +1,11 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { Tick } from '@/components/icons.tsx';
 import { Hours, MapEmbed } from '@/components/shared.tsx';
 import { bookingRange, fmtHour, fmtShort, nextFreeSlot } from '@/lib/schedule.ts';
 import { ADDRESS_LINES, PHONE_DISPLAY, PHONE_HREF, REVIEWS, SERVICES } from '@/lib/site.ts';
 import { availability } from '@/lib/store.ts';
+import garageFront from '@/public/images/garage-front.webp';
 
 export const dynamic = 'force-dynamic';
 
@@ -111,6 +113,7 @@ export default async function HomePage() {
           <a href={PHONE_HREF} className="find-us__phone">{PHONE_DISPLAY}</a>
           <Hours />
         </div>
+        <Image src={garageFront} alt="Drive Safe MOT Centre workshop on Taylor Street" className="find-us__photo" sizes="(min-width: 860px) 280px, 100vw" />
         <MapEmbed />
       </section>
     </>
