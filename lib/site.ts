@@ -36,6 +36,12 @@ export const BOOKING = {
   maxAttemptsPerHour: 10,
 };
 
+/**
+ * The day's schedule is emailed to the garage once a day during this UK hour.
+ * The scheduler calls in at 8:30; anything outside 8:00–8:59 is ignored, which keeps it right through clock changes.
+ */
+export const DAILY_EMAIL_HOUR = 8;
+
 export const OPENING_HOURS = [
   { d: 'Monday – Friday', t: '9:00 – 17:00' },
   { d: 'Saturday', t: BOOKING.openSaturday ? '9:00 – 17:00' : 'Closed' },

@@ -27,6 +27,7 @@ Without `DATABASE_URL`, development keeps bookings in memory (lost on restart). 
 | `DATABASE_URL` | Postgres connection string. The `bookings` table is created automatically on first use. |
 | `RESEND_API_KEY` | [Resend](https://resend.com) key for confirmation emails. |
 | `BOOKING_FROM_EMAIL` | Sender, on a domain verified in Resend, e.g. `Drive Safe MOT Centre <bookings@yourdomain>`. |
+| `CRON_SECRET` | Enables the 8:30am daily diary email (see below). Any long random string. |
 | `GARAGE_EMAIL` | Receives a notification for every new booking (reply goes to the customer). Defaults to the garage's address, drivesafeltd@outlook.com (`EMAIL` in `lib/site.ts`). Customer replies to confirmation emails also go to `EMAIL`. |
 
 Resend can only send **from** a domain you own and have verified, so `BOOKING_FROM_EMAIL` can't be the Outlook address. Use something like `bookings@yourdomain.co.uk`; replies still reach the Outlook inbox.
@@ -45,6 +46,17 @@ Resend can only send **from** a domain you own and have verified, so `BOOKING_FR
 - **Move** or **Cancel** a booking. Cancelling frees the slot online straight away. Customers are not emailed about moves or cancellations, so give them a call.
 - **Block slot** (e.g. a booking taken another way) and **Close this day** (holidays, training). Closed days show as "Closed" in the customer calendar. Closing a day with bookings on it shows a warning so staff can call those customers.
 - A 4-week strip shows how full each day is; search by booking reference jumps to that booking.
+
+## Daily diary email (8:30am)
+
+Every morning the garage inbox (`GARAGE_EMAIL`, default drivesafeltd@outlook.com) gets the day's timetable: each hour's booking with service, registration, name, phone and reference, plus blocked and free slots, a warning if the day is closed but still has bookings, and a 7-day summary. Staff can also send any day's schedule on demand with **Email this day's schedule** on the staff page.
+
+It needs `CRON_SECRET` set (any long random string) and something to call `GET /api/cron/daily-schedule` each morning with the header `Authorization: Bearer <CRON_SECRET>`:
+
+- **Vercel:** already configured in `vercel.json`. Vercel sends the header automatically. Its scheduler runs in UTC, so there are two triggers (07:30 and 08:30 UTC); the site only sends between 8:00 and 8:59 UK time, so exactly one of them sends, in summer and winter. On Vercel's free Hobby plan a trigger may run any time within its hour, so the email arrives between 8:00 and 9:00; on Pro it arrives at 8:30.
+- **Any other host, or for exactly 8:30 on a free plan:** a free service such as cron-job.org, set to 08:30 Europe/London, calling the URL above with that header.
+
+Each day is only sent once, even if the scheduler retries. If sending fails, the next trigger that morning tries again.
 
 ## Spam and abuse protection
 
@@ -65,6 +77,7 @@ Resend can only send **from** a domain you own and have verified, so `BOOKING_FR
 - `lib/email.ts`: confirmation and garage notification emails
 - `app/api/availability`, `app/api/bookings`: booking API
 - `components/BookingForm.tsx`: the 4-step booking UI
+- `lib/daily-email.ts`, `app/api/cron/daily-schedule`: the 8:30am diary email
 
 ## Privacy
 

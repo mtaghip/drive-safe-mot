@@ -32,6 +32,10 @@ interface Store {
   /** Throws SlotTakenError when the new slot is booked or blocked. */
   move(id: number, date: string, hour: number): Promise<void>;
   findByRef(ref: string): Promise<StoredBooking | null>;
+  /** Marks the daily schedule email for `day` as sent. False if it already was, so retries never send twice. */
+  claimDailyEmail(day: string): Promise<boolean>;
+  /** Undoes claimDailyEmail after a failed send, so the next trigger tries again. */
+  releaseDailyEmail(day: string): Promise<void>;
 }
 
 // Applied on first use, so a fresh database needs no manual setup.
@@ -71,6 +75,12 @@ CREATE TABLE IF NOT EXISTS rate_events (
   at  timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS rate_events_key_at ON rate_events (key, at);
+
+-- Days the 8:30am schedule email has gone out.
+CREATE TABLE IF NOT EXISTS daily_emails (
+  day     date PRIMARY KEY,
+  sent_at timestamptz NOT NULL DEFAULT now()
+);
 `;
 
 const REF_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -172,6 +182,13 @@ class PgStore implements Store {
     }
     if (res.rowCount === 0) throw new SlotTakenError();
   }
+  async claimDailyEmail(day: string) {
+    const res = await this.q('INSERT INTO daily_emails (day) VALUES ($1) ON CONFLICT DO NOTHING', [day]);
+    return res.rowCount === 1;
+  }
+  async releaseDailyEmail(day: string) {
+    await this.q('DELETE FROM daily_emails WHERE day = $1', [day]);
+  }
   async findByRef(ref: string) {
     const { rows } = await this.q<StoredBooking>(`SELECT ${BOOKING_COLS} FROM bookings WHERE upper(ref) = upper($1) AND cancelled_at IS NULL`, [ref]);
     return rows[0] ?? null;
@@ -183,6 +200,7 @@ class MemoryStore implements Store {
   private blockRows: Block[] = [];
   private events: { key: string; at: number }[] = [];
   private nextId = 1;
+  private dailySent = new Set<string>();
   private live = () => this.rows.filter(r => !r.cancelled);
 
   async availability(from: string, to: string) {
@@ -237,6 +255,14 @@ class MemoryStore implements Store {
     const blocked = this.blockRows.some(x => x.date === date && (x.hour == null || x.hour === hour));
     if (!r || blocked || this.live().some(x => x.id !== id && x.date === date && x.hour === hour)) throw new SlotTakenError();
     r.date = date; r.hour = hour;
+  }
+  async claimDailyEmail(day: string) {
+    if (this.dailySent.has(day)) return false;
+    this.dailySent.add(day);
+    return true;
+  }
+  async releaseDailyEmail(day: string) {
+    this.dailySent.delete(day);
   }
   async findByRef(ref: string) {
     return this.live().find(r => r.ref.toUpperCase() === ref.toUpperCase()) ?? null;

@@ -122,6 +122,17 @@ export type Availability = { taken: Taken; closed: string[] };
 
 export const freeHours = (iso: string, taken: Taken) => BOOKING.hours.filter(h => !taken[iso]?.includes(h));
 
+/** Why a regular closed day is closed, for staff-facing text. Staff-closed days are separate. */
+export function closureLabel(iso: string): 'Bank holiday' | 'Saturday' | 'Sunday' | null {
+  if (isOpenDay(iso)) return null;
+  if (BOOKING.closedOnBankHolidays && isBankHoliday(iso)) return 'Bank holiday';
+  return weekday(iso) === 0 ? 'Sunday' : 'Saturday';
+}
+
+/** Current hour (0–23) in UK time. */
+export const ukHour = (now = new Date()) =>
+  Number(new Intl.DateTimeFormat('en-GB', { timeZone: BOOKING.timeZone, hour: '2-digit', hourCycle: 'h23' }).format(now));
+
 /** Why a day can't be booked, or null when it can. */
 export function closedReason(iso: string, closed: string[]): 'Closed' | 'Holiday' | null {
   if (BOOKING.closedOnBankHolidays && isBankHoliday(iso) && !isWeekend(iso)) return 'Holiday';

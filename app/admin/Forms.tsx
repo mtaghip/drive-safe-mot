@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useRef } from 'react';
 import { BOOKING, SERVICES } from '@/lib/site.ts';
 import { fmtHour } from '@/lib/schedule.ts';
-import { addPhoneBooking, findRef, moveBooking } from './actions.ts';
+import { addPhoneBooking, emailDaySchedule, findRef, moveBooking } from './actions.ts';
 
 /** Submit button that asks first. */
 export function ConfirmButton({ children, message, className = 'adm-btn adm-btn--ghost' }: { children: React.ReactNode; message: string; className?: string }) {
@@ -52,6 +52,18 @@ export function MoveForm({ id, date, hour }: { id: number; date: string; hour: n
       </div>
       <button className="btn-amber adm-btn" disabled={pending}>{pending ? 'Moving…' : 'Move'}</button>
       {state?.error && <span className="error-text" role="alert" style={{ flexBasis: '100%' }}>{state.error}</span>}
+    </form>
+  );
+}
+
+export function EmailDayButton({ date, to }: { date: string; to: string }) {
+  const [state, action, pending] = useActionState(emailDaySchedule, undefined);
+  return (
+    <form action={action} className="adm-inline">
+      <input type="hidden" name="date" value={date} />
+      <button className="adm-btn adm-btn--ghost" disabled={pending}>{pending ? 'Sending…' : 'Email this day’s schedule'}</button>
+      {state?.ok && <span className="adm-muted" role="status">Sent to {to}</span>}
+      {state?.error && <span className="error-text" role="alert">{state.error}</span>}
     </form>
   );
 }

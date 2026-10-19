@@ -3,18 +3,19 @@ import { ADDRESS_ONE_LINE, EMAIL, PHONE_DISPLAY, serviceById } from './site.ts';
 import { fmtHour, fmtLong } from './schedule.ts';
 import type { Booking } from './store.ts';
 
-type Mail = { to: string; subject: string; text: string; replyTo?: string };
+type Mail = { to: string; subject: string; text: string; html?: string; replyTo?: string };
 
-async function send(mail: Mail) {
+export async function send(mail: Mail) {
   const key = process.env.RESEND_API_KEY, from = process.env.BOOKING_FROM_EMAIL;
   if (!key || !from) {
-    console.info('[email] RESEND_API_KEY or BOOKING_FROM_EMAIL not set; would send:\n' + JSON.stringify(mail, null, 2));
+    const { html, ...rest } = mail;
+    console.info('[email] RESEND_API_KEY or BOOKING_FROM_EMAIL not set; would send:\n' + JSON.stringify({ ...rest, html: html && `(${html.length} characters)` }, null, 2));
     return;
   }
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from, to: [mail.to], subject: mail.subject, text: mail.text, reply_to: mail.replyTo }),
+    body: JSON.stringify({ from, to: [mail.to], subject: mail.subject, text: mail.text, html: mail.html, reply_to: mail.replyTo }),
   });
   if (!res.ok) throw new Error(`Resend responded ${res.status}: ${await res.text()}`);
 }

@@ -4,7 +4,8 @@ import { cookies, headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { adminPassword, requireAdmin } from '@/lib/admin.ts';
-import { sendBookingEmails } from '@/lib/email.ts';
+import { buildDailyEmail, dailyEmailTo, loadDaySchedule } from '@/lib/daily-email.ts';
+import { send, sendBookingEmails } from '@/lib/email.ts';
 import { isIsoDate, isOpenDay, isSlotHour, todayIso } from '@/lib/schedule.ts';
 import { ADMIN_COOKIE, ADMIN_SESSION_DAYS, clientIp, hashIp, makeSession, passwordMatches } from '@/lib/security.ts';
 import { createBooking, SlotTakenError, store } from '@/lib/store.ts';
@@ -83,6 +84,20 @@ export async function removeBlock(form: FormData) {
   await requireAdmin();
   await store().removeBlock(int(form, 'id'));
   revalidatePath('/admin');
+}
+
+/** Sends a day's schedule email now, e.g. to check it or after making changes. */
+export async function emailDaySchedule(_: FormState, form: FormData): Promise<FormState> {
+  await requireAdmin();
+  const date = text(form, 'date');
+  if (!isIsoDate(date)) return { error: 'Choose a day.' };
+  try {
+    await send({ to: dailyEmailTo(), ...buildDailyEmail(await loadDaySchedule(store(), date)) });
+  } catch (err) {
+    console.error('[daily-email] manual send failed', err);
+    return { error: 'Couldn’t send the email. Check the email settings.' };
+  }
+  return { ok: true };
 }
 
 export async function findRef(_: FormState, form: FormData): Promise<FormState> {

@@ -1,21 +1,16 @@
 import Link from 'next/link';
 import { requireAdmin } from '@/lib/admin.ts';
-import { addDays, fmtHour, fmtLong, isBankHoliday, isIsoDate, isOpenDay, todayIso, weekday } from '@/lib/schedule.ts';
+import { addDays, closureLabel, fmtHour, fmtLong, isIsoDate, isOpenDay, todayIso, weekday } from '@/lib/schedule.ts';
 import { BOOKING, serviceById } from '@/lib/site.ts';
 import { store } from '@/lib/store.ts';
 import { addBlock, cancelBooking, removeBlock } from './actions.ts';
-import { ConfirmButton, MoveForm, PhoneBookingForm, RefSearch } from './Forms.tsx';
+import { dailyEmailTo } from '@/lib/daily-email.ts';
+import { ConfirmButton, EmailDayButton, MoveForm, PhoneBookingForm, RefSearch } from './Forms.tsx';
 
 export const dynamic = 'force-dynamic';
 
 const STRIP_DAYS = 28;
 const dayName = (iso: string) => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][weekday(iso)];
-
-function regularClosure(iso: string): string | null {
-  if (isOpenDay(iso)) return null;
-  if (BOOKING.closedOnBankHolidays && isBankHoliday(iso)) return 'Bank holiday';
-  return weekday(iso) === 0 ? 'Sunday' : 'Saturday';
-}
 
 export default async function AdminPage({ searchParams }: { searchParams: Promise<{ date?: string }> }) {
   await requireAdmin();
@@ -30,7 +25,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   ]);
 
   const closedBlock = dayBlocks.find(b => b.hour == null);
-  const regular = regularClosure(date);
+  const regular = closureLabel(date);
   const closed = !!(closedBlock || regular);
   const stripClosed = new Set(stripBlocks.filter(b => b.hour == null).map(b => b.date));
   const upcomingClosures = closures.filter(b => b.hour == null);
@@ -52,7 +47,10 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           </form>
         </div>
       </div>
-      <RefSearch />
+      <div className="adm-inline" style={{ justifyContent: 'space-between' }}>
+        <RefSearch />
+        <EmailDayButton date={date} to={dailyEmailTo()} />
+      </div>
 
       <nav className="adm-strip" aria-label="Next four weeks">
         {Array.from({ length: STRIP_DAYS }, (_, i) => addDays(today, i)).map(d => {
