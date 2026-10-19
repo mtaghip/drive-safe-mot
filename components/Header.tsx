@@ -39,7 +39,7 @@ export default function Header() {
 
       {menu && (
         <nav id="mobile-nav" className="mobile-nav" aria-label="Main">
-          {NAV.map(n => <Link key={n.href} href={n.href} className="mobile-nav__link" aria-current={current(n.href)}>{n.label}</Link>)}
+          {NAV.map(n => <Link key={n.href} href={n.href} className="mobile-nav__link" aria-current={current(n.href)} onClick={() => setMenu(false)}>{n.label}</Link>)}
           <a href={PHONE_HREF} className="btn-amber mobile-nav__call">Call {PHONE_DISPLAY}</a>
         </nav>
       )}

@@ -3,14 +3,14 @@ import { Tick } from '@/components/icons.tsx';
 import { Hours, MapEmbed } from '@/components/shared.tsx';
 import { bookingRange, fmtHour, fmtShort, nextFreeSlot } from '@/lib/schedule.ts';
 import { ADDRESS_LINES, PHONE_DISPLAY, PHONE_HREF, REVIEWS, SERVICES } from '@/lib/site.ts';
-import { takenSlots } from '@/lib/store.ts';
+import { availability } from '@/lib/store.ts';
 
 export const dynamic = 'force-dynamic';
 
 async function nextSlotLabel() {
   try {
     const range = bookingRange();
-    const slot = nextFreeSlot(range, await takenSlots(range.start, range.end));
+    const slot = nextFreeSlot(range, await availability(range.start, range.end));
     return slot ? `${fmtShort(slot.date)}, ${fmtHour(slot.hour)}` : 'Call us to check';
   } catch (err) {
     console.error('[home] could not load availability', err);

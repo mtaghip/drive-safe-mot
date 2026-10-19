@@ -1,3 +1,11 @@
+/** Public address of the site, for links in the sitemap, share previews and emails. */
+export function siteUrl(): string {
+  const url = process.env.SITE_URL
+    || (process.env.VERCEL_PROJECT_PRODUCTION_URL && 'https://' + process.env.VERCEL_PROJECT_PRODUCTION_URL)
+    || 'http://localhost:3000';
+  return url.replace(/\/$/, '');
+}
+
 export const PHONE_DISPLAY = '01582 729943';
 export const PHONE_HREF = 'tel:01582729943';
 export const ADDRESS_LINES = ['21 Taylor St', 'Luton', 'LU2 0EY'];
@@ -18,13 +26,20 @@ export const BOOKING = {
   /** Start hours of the one-hour slots: 9:00–10:00 … 16:00–17:00. */
   hours: [9, 10, 11, 12, 13, 14, 15, 16],
   openSaturday: false,
+  /** England and Wales bank holidays, worked out automatically. */
+  closedOnBankHolidays: true,
   timeZone: 'Europe/London',
+  /** Most upcoming bookings one phone number or email can hold online. */
+  maxUpcomingPerCustomer: 3,
+  /** Most booking attempts from one network address per hour. */
+  maxAttemptsPerHour: 10,
 };
 
 export const OPENING_HOURS = [
   { d: 'Monday – Friday', t: '9:00 – 17:00' },
   { d: 'Saturday', t: BOOKING.openSaturday ? '9:00 – 17:00' : 'Closed' },
   { d: 'Sunday', t: 'Closed' },
+  ...(BOOKING.closedOnBankHolidays ? [{ d: 'Bank holidays', t: 'Closed' }] : []),
 ];
 
 export type ServiceId = 'mot' | 'dpf' | 'repair' | 'tyres' | 'service' | 'tuning';

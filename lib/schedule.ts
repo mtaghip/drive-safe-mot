@@ -32,10 +32,57 @@ export function bookingRange(now = new Date()) {
   return { start, end: addDays(start, BOOKING.weeks * 7 - 1) };
 }
 
+/** Easter Sunday (Anonymous Gregorian algorithm). */
+function easter(y: number): string {
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4;
+  const f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const month = Math.floor((h + l - 7 * m + 114) / 31), day = ((h + l - 7 * m + 114) % 31) + 1;
+  return y + '-' + pad(month) + '-' + pad(day);
+}
+
+const isWeekend = (iso: string) => weekday(iso) === 0 || weekday(iso) === 6;
+
+/** Monday on or after / before the given day. */
+const mondayFrom = (iso: string, dir: 1 | -1) => { let d = iso; while (weekday(d) !== 1) d = addDays(d, dir); return d; };
+
+const bankHolidayCache = new Map<number, Set<string>>();
+
+/**
+ * England and Wales bank holidays, including substitute days when one falls at a weekend.
+ * One-off holidays (coronations, jubilees) aren't predictable: close those days from the staff page.
+ */
+export function bankHolidays(y: number): Set<string> {
+  const cached = bankHolidayCache.get(y);
+  if (cached) return cached;
+  const days = new Set<string>();
+  // Fixed-date holidays keep their weekday date; weekend ones move to the next free weekday.
+  const placeFixed = (dates: string[]) => {
+    const moving = dates.filter(isWeekend);
+    for (const d of dates) if (!isWeekend(d)) days.add(d);
+    for (const d of moving) {
+      let s = d;
+      while (isWeekend(s) || days.has(s)) s = addDays(s, 1);
+      days.add(s);
+    }
+  };
+  placeFixed([y + '-01-01']);
+  const e = easter(y);
+  days.add(addDays(e, -2)).add(addDays(e, 1));
+  days.add(mondayFrom(y + '-05-01', 1)).add(mondayFrom(y + '-05-31', -1)).add(mondayFrom(y + '-08-31', -1));
+  placeFixed([y + '-12-25', y + '-12-26']);
+  bankHolidayCache.set(y, days);
+  return days;
+}
+
+export const isBankHoliday = (iso: string) => bankHolidays(Number(iso.slice(0, 4))).has(iso);
+
+/** Regular opening days. Days closed from the staff page are checked separately. */
 export function isOpenDay(iso: string): boolean {
   const w = weekday(iso);
   if (w === 0) return false;
-  if (w === 6) return BOOKING.openSaturday;
+  if (w === 6 && !BOOKING.openSaturday) return false;
+  if (BOOKING.closedOnBankHolidays && isBankHoliday(iso)) return false;
   return true;
 }
 
@@ -68,15 +115,25 @@ export const fmtShort = (iso: string) => fmt(iso, { weekday: 'short', day: 'nume
 export const fmtMonth = (iso: string) => fmt(iso, { month: 'long', year: 'numeric' });
 export const fmtHour = (h: number) => pad(h) + ':00';
 
+/** Hours already booked or blocked, by day. */
 export type Taken = Record<string, number[]>;
+/** What the calendar needs beyond the fixed rules: taken slots and days closed by staff. */
+export type Availability = { taken: Taken; closed: string[] };
 
 export const freeHours = (iso: string, taken: Taken) => BOOKING.hours.filter(h => !taken[iso]?.includes(h));
 
+/** Why a day can't be booked, or null when it can. */
+export function closedReason(iso: string, closed: string[]): 'Closed' | 'Holiday' | null {
+  if (BOOKING.closedOnBankHolidays && isBankHoliday(iso) && !isWeekend(iso)) return 'Holiday';
+  if (!isOpenDay(iso) || closed.includes(iso)) return 'Closed';
+  return null;
+}
+
 /** Earliest bookable slot in the range, or null when everything is full. */
-export function nextFreeSlot(r: { start: string; end: string }, taken: Taken): { date: string; hour: number } | null {
+export function nextFreeSlot(r: { start: string; end: string }, a: Availability): { date: string; hour: number } | null {
   for (let d = r.start; d <= r.end; d = addDays(d, 1)) {
-    if (!isOpenDay(d)) continue;
-    const h = freeHours(d, taken)[0];
+    if (closedReason(d, a.closed)) continue;
+    const h = freeHours(d, a.taken)[0];
     if (h != null) return { date: d, hour: h };
   }
   return null;

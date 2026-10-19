@@ -3,14 +3,15 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import {
-  bookingRange, daysInMonth, fmtHour, fmtLong, fmtMonth, fmtShort, freeHours, inRange, isOpenDay, monthsInRange, pad, weekday,
-  type Taken,
+  bookingRange, closedReason, daysInMonth, fmtHour, fmtLong, fmtMonth, fmtShort, freeHours, inRange, monthsInRange, pad, weekday,
+  type Availability as Open,
 } from '@/lib/schedule.ts';
 import { BOOKING, PHONE_DISPLAY, PHONE_HREF, SERVICES, serviceById, type ServiceId } from '@/lib/site.ts';
 import { validateBooking, type FieldErrors } from '@/lib/validation.ts';
 import { Tick } from './icons.tsx';
+import Turnstile, { TURNSTILE_SITE_KEY } from './Turnstile.tsx';
 
-type Availability = { start: string; end: string; taken: Taken };
+type Availability = Open & { start: string; end: string };
 type Done = { ref: string; first: string; email: string; reg: string; service: string; when: string };
 
 const EMPTY_FORM = { name: '', phone: '', email: '', reg: '' };
@@ -29,6 +30,8 @@ export default function BookingForm({ initialService }: { initialService: Servic
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [done, setDone] = useState<Done | null>(null);
+  const [captcha, setCaptcha] = useState('');
+  const [captchaReset, setCaptchaReset] = useState(0);
 
   const loadAvailability = useCallback(async () => {
     try {
@@ -44,7 +47,7 @@ export default function BookingForm({ initialService }: { initialService: Servic
 
   // Until availability arrives, show the calendar from the local range with every slot unconfirmed.
   const range = avail ?? bookingRange();
-  const taken = avail?.taken ?? {};
+  const taken = avail?.taken ?? {}, closed = avail?.closed ?? [];
   const months = monthsInRange(range);
   const mi = Math.min(month, months.length - 1), m0 = months[mi];
 
@@ -54,14 +57,14 @@ export default function BookingForm({ initialService }: { initialService: Servic
   const lead = (weekday(m0) + 6) % 7;
   const days = Array.from({ length: daysInMonth(m0) }, (_, i) => {
     const iso = m0.slice(0, 8) + pad(i + 1);
-    const inR = inRange(iso, range), open = isOpenDay(iso);
-    const free = inR && open ? freeHours(iso, taken).length : 0;
-    const ok = inR && open && free > 0;
-    let sub = '';
-    if (inR && !open) sub = 'Closed';
-    else if (inR && open && !free) sub = 'Full';
-    else if (ok && avail && free <= 2) sub = free + ' left';
-    return { iso, day: i + 1, ok, inR, sub, sel: date === iso };
+    const inR = inRange(iso, range), why = closedReason(iso, closed);
+    const free = inR && !why ? freeHours(iso, taken).length : 0;
+    const ok = inR && !why && free > 0;
+    let sub = '', label = fmtLong(iso);
+    if (inR && why) { sub = 'Closed'; label += why === 'Holiday' ? ', bank holiday, closed' : ', closed'; }
+    else if (inR && !free) { sub = 'Full'; label += ', fully booked'; }
+    else if (ok && avail && free <= 2) { sub = free + ' left'; label += ', ' + free + ' slots left'; }
+    return { iso, day: i + 1, ok, inR, sub, label, sel: date === iso };
   });
 
   async function confirm() {
@@ -69,13 +72,15 @@ export default function BookingForm({ initialService }: { initialService: Servic
     const payload = { service, date, hour: slot, ...form };
     const check = validateBooking(payload);
     if (!check.ok) { setErrors(check.errors); scrollToFirstError(); return; }
+    if (TURNSTILE_SITE_KEY && !captcha) { setSubmitError('Please wait a moment for the security check, then try again.'); return; }
 
     setSubmitting(true);
     try {
       const res = await fetch('/api/bookings', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...check.value, website: honeypot }),
+        body: JSON.stringify({ ...check.value, website: honeypot, turnstileToken: captcha }),
       });
+      setCaptchaReset(n => n + 1);
       const body = await res.json().catch(() => ({}));
       if (res.status === 201) {
         const v = check.value;
@@ -92,6 +97,7 @@ export default function BookingForm({ initialService }: { initialService: Servic
       }
       setSubmitError(body.error ?? 'Something went wrong. Please try again.');
     } catch {
+      setCaptchaReset(n => n + 1);
       setSubmitError(`We couldn’t reach the booking system. Please try again or call ${PHONE_DISPLAY}.`);
     } finally {
       setSubmitting(false);
@@ -158,7 +164,7 @@ export default function BookingForm({ initialService }: { initialService: Servic
               <button key={d.iso} type="button" disabled={!d.ok}
                 className={'day' + (d.sel ? ' day--sel' : d.ok ? ' day--ok' : d.inR ? ' day--muted' : '')}
                 aria-pressed={d.ok ? d.sel : undefined}
-                aria-label={fmtLong(d.iso) + (d.sub ? ', ' + d.sub : '')}
+                aria-label={d.label}
                 onClick={() => { setDate(d.iso); setSlot(null); clearError('when'); }}>
                 <span>{d.day}</span>
                 <span className="day__sub">{d.sub}</span>
@@ -247,8 +253,10 @@ export default function BookingForm({ initialService }: { initialService: Servic
         <button type="button" className="btn-amber summary__confirm" onClick={confirm} disabled={submitting}>
           {submitting ? 'Booking…' : 'Confirm booking'}
         </button>
+        <Turnstile onToken={setCaptcha} resetKey={captchaReset} />
         {submitError && <p className="summary__error" role="alert">{submitError}</p>}
         <p className="summary__small">Pay on the day. Need to change your slot? Call <a href={PHONE_HREF}>{PHONE_DISPLAY}</a>.</p>
+        <p className="summary__small" style={{ marginTop: 10, fontSize: 13 }}>We use your details only to manage this booking. See our <Link href="/privacy">privacy notice</Link>.</p>
       </aside>
     </section>
   );

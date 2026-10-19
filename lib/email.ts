@@ -19,7 +19,8 @@ async function send(mail: Mail) {
   if (!res.ok) throw new Error(`Resend responded ${res.status}: ${await res.text()}`);
 }
 
-export async function sendBookingEmails(b: Booking) {
+/** Customer confirmation (when there's an email address) and, for online bookings, a notice to the garage. */
+export async function sendBookingEmails(b: Booking, { notifyGarage }: { notifyGarage: boolean }) {
   const service = serviceById(b.service)!;
   const when = `${fmtLong(b.date)}, ${fmtHour(b.hour)} – ${fmtHour(b.hour + 1)}`;
   const details = [
@@ -27,13 +28,13 @@ export async function sendBookingEmails(b: Booking) {
     `Vehicle: ${b.reg}`, `Where: ${ADDRESS_ONE_LINE}`,
   ].join('\n');
 
-  const customer = send({
+  const customer = !b.email ? Promise.resolve() : send({
     to: b.email,
     subject: `You're booked in: ${service.name}, ${fmtLong(b.date)} at ${fmtHour(b.hour)}`,
     text: `Hi ${b.name.split(' ')[0]},\n\nThanks for booking with Drive Safe MOT Centre.\n\n${details}\n\n` +
       `Pay on the day. Need to change your slot? Call us on ${PHONE_DISPLAY}.\n\nDrive Safe MOT Centre`,
   });
-  const garage = process.env.GARAGE_EMAIL ? send({
+  const garage = notifyGarage && process.env.GARAGE_EMAIL ? send({
     to: process.env.GARAGE_EMAIL,
     replyTo: b.email,
     subject: `New booking ${b.ref}: ${service.name}, ${fmtLong(b.date)} ${fmtHour(b.hour)}, ${b.reg}`,
