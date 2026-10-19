@@ -8,6 +8,7 @@ export function siteUrl(): string {
 
 export const PHONE_DISPLAY = '01582 729943';
 export const PHONE_HREF = 'tel:01582729943';
+export const EMAIL = 'drivesafeltd@outlook.com';
 export const ADDRESS_LINES = ['21 Taylor St', 'Luton', 'LU2 0EY'];
 export const ADDRESS_ONE_LINE = '21 Taylor St, Luton LU2 0EY';
 export const MAP_EMBED_SRC = 'https://maps.google.com/maps?q=21%20Taylor%20St%2C%20Luton%20LU2%200EY&z=16&output=embed';

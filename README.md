@@ -27,7 +27,9 @@ Without `DATABASE_URL`, development keeps bookings in memory (lost on restart). 
 | `DATABASE_URL` | Postgres connection string. The `bookings` table is created automatically on first use. |
 | `RESEND_API_KEY` | [Resend](https://resend.com) key for confirmation emails. |
 | `BOOKING_FROM_EMAIL` | Sender, on a domain verified in Resend, e.g. `Drive Safe MOT Centre <bookings@yourdomain>`. |
-| `GARAGE_EMAIL` | Receives a notification for every new booking (reply goes to the customer). |
+| `GARAGE_EMAIL` | Receives a notification for every new booking (reply goes to the customer). Defaults to the garage's address, drivesafeltd@outlook.com (`EMAIL` in `lib/site.ts`). Customer replies to confirmation emails also go to `EMAIL`. |
+
+Resend can only send **from** a domain you own and have verified, so `BOOKING_FROM_EMAIL` can't be the Outlook address. Use something like `bookings@yourdomain.co.uk`; replies still reach the Outlook inbox.
 
 ## How booking works
 

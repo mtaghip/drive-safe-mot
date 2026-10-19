@@ -1,5 +1,5 @@
 // Booking emails via the Resend HTTP API. Without RESEND_API_KEY they are logged instead.
-import { ADDRESS_ONE_LINE, PHONE_DISPLAY, serviceById } from './site.ts';
+import { ADDRESS_ONE_LINE, EMAIL, PHONE_DISPLAY, serviceById } from './site.ts';
 import { fmtHour, fmtLong } from './schedule.ts';
 import type { Booking } from './store.ts';
 
@@ -32,10 +32,12 @@ export async function sendBookingEmails(b: Booking, { notifyGarage }: { notifyGa
     to: b.email,
     subject: `You're booked in: ${service.name}, ${fmtLong(b.date)} at ${fmtHour(b.hour)}`,
     text: `Hi ${b.name.split(' ')[0]},\n\nThanks for booking with Drive Safe MOT Centre.\n\n${details}\n\n` +
-      `Pay on the day. Need to change your slot? Call us on ${PHONE_DISPLAY}.\n\nDrive Safe MOT Centre`,
+      `Pay on the day. Need to change your slot? Call us on ${PHONE_DISPLAY} or reply to this email.\n\nDrive Safe MOT Centre`,
+    // Customer replies go to the garage's inbox, whatever address the email is sent from.
+    replyTo: EMAIL,
   });
-  const garage = notifyGarage && process.env.GARAGE_EMAIL ? send({
-    to: process.env.GARAGE_EMAIL,
+  const garage = notifyGarage ? send({
+    to: process.env.GARAGE_EMAIL || EMAIL,
     replyTo: b.email,
     subject: `New booking ${b.ref}: ${service.name}, ${fmtLong(b.date)} ${fmtHour(b.hour)}, ${b.reg}`,
     text: `${details}\n\nName: ${b.name}\nPhone: ${b.phone}\nEmail: ${b.email}`,

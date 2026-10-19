@@ -94,6 +94,8 @@ img { max-width: 100%; }
 .site-footer__info { display: flex; flex-direction: column; gap: 8px; font-size: 15px; }
 .site-footer__name { font-weight: 800; font-stretch: 78%; font-size: 22px; text-transform: uppercase; color: #fff; }
 .site-footer__phone { color: #fff; font-weight: 700; text-decoration: none; }
+.site-footer__email { color: var(--on-navy); text-decoration: none; overflow-wrap: anywhere; }
+.site-footer__email:hover { color: #fff; }
 .site-footer__nav { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: flex-start; }
 .site-footer__nav a { color: var(--on-navy); text-decoration: none; font-size: 15px; }
 .site-footer__nav a:hover { color: #fff; }
@@ -305,6 +307,7 @@ img { max-width: 100%; }
 .info-card { background: #fff; border-radius: 16px; padding: 28px; }
 .info-card__label { font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .info-card__addr { margin: 12px 0 0; font-size: 22px; line-height: 1.4; font-weight: 700; }
+.info-card__email { display: inline-block; margin-top: 12px; font-size: clamp(18px, 2.2vw, 22px); font-weight: 700; overflow-wrap: anywhere; }
 .info-card__link { display: inline-block; margin-top: 14px; font-weight: 700; font-size: 16px; }
 .info-card .hours { margin-top: 10px; border-top: 0; }
 .info-card .hours__row { border-bottom-color: var(--line); }

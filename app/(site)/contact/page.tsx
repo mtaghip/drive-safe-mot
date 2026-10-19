@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { Hours, MapEmbed } from '@/components/shared.tsx';
-import { DIRECTIONS_HREF, PHONE_DISPLAY, PHONE_HREF } from '@/lib/site.ts';
+import { DIRECTIONS_HREF, EMAIL, PHONE_DISPLAY, PHONE_HREF } from '@/lib/site.ts';
 
 export const metadata: Metadata = {
   title: 'Contact',
-  description: 'Drive Safe MOT Centre, 21 Taylor St, Luton LU2 0EY. Call 01582 729943.',
+  description: 'Drive Safe MOT Centre, 21 Taylor St, Luton LU2 0EY. Call 01582 729943 or email drivesafeltd@outlook.com.',
 };
 
 export default function ContactPage() {
@@ -23,6 +23,10 @@ export default function ContactPage() {
             <span className="call-card__num">{PHONE_DISPLAY}</span>
             <span className="call-card__hint">Tap to call on mobile</span>
           </a>
+          <div className="info-card">
+            <div className="info-card__label">Email</div>
+            <a href={`mailto:${EMAIL}`} className="info-card__email">{EMAIL}</a>
+          </div>
           <div className="info-card">
             <div className="info-card__label">Address</div>
             <p className="info-card__addr">21 Taylor St<br />Luton LU2 0EY</p>
