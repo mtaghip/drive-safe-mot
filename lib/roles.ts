@@ -16,6 +16,8 @@ const CAPS = {
   manage: ['manager'],
   /** Activity log. */
   viewActivity: ['manager'],
+  /** Reports: takings, unpaid invoices, bookings and reminders. */
+  viewReports: ['manager'],
   /** Team page: add staff, change roles, reset passwords. */
   manageStaff: [],
 } satisfies Record<string, Role[]>;

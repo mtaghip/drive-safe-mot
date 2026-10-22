@@ -95,3 +95,46 @@ test('reminders go once, only to opted-in customers with email', async () => {
   assert.equal(up.length, 4);
   assert.ok(up.every(u => u.lastSent === today));
 });
+
+test('reports: takings, work, unpaid, sources and reminder conversion', async () => {
+  const rep = await import('./reports.ts');
+  const today = todayIso(), monthStart = today.slice(0, 8) + '01';
+  // From the invoice tests: 1001 paid today (£70.00 by card), 1002 voided.
+  const series = await rep.takingsSeries(monthStart, today, 'day');
+  assert.equal(series.length, Number(today.slice(8)), 'one row per day, zeros included');
+  assert.equal(series.find(r => r.bucket === today)!.pence, 7000);
+  assert.equal(series.reduce((s, r) => s + r.pence, 0), 7000, 'void invoice not counted');
+  const sum = await rep.takingsSummary(monthStart, today);
+  assert.deepEqual(sum.paid, { pence: 7000, n: 1 });
+  assert.deepEqual(sum.byMethod, [{ method: 'card', pence: 7000, n: 1 }]);
+
+  const weekly = await rep.takingsSeries(addDays(today, -40), today, 'week');
+  assert.ok(weekly.every(r => new Date(r.bucket + 'T00:00:00Z').getUTCDay() === 1), 'weeks start on Monday');
+
+  const range = [addDays(today, -1), addDays(today, 40)] as const;
+  const work = await rep.workByService(...range);
+  assert.deepEqual(work.booked, [{ service: 'mot', n: 4 }]);
+  assert.deepEqual(work.invoiced.map(w => w.kind).sort(), ['mot', 'part']);
+  assert.deepEqual(await rep.bookingSources(...range), { online: { source: 'online', kept: 4, cancelled: 0 }, phone: { source: 'phone', kept: 0, cancelled: 0 } });
+
+  // An issued, unpaid invoice shows on the unpaid list.
+  const dave = (await searchCustomers('Dave'))[0];
+  const id = await inv.createDraft({ customerId: dave.id, staffId: null as unknown as number });
+  await inv.saveDraft(id, { ...(await inv.getInvoice(id))!, lines: [{ kind: 'labour', description: 'Clutch', quantity: 1, unitPence: 35000, vatRate: null }] });
+  await inv.issueInvoice(id);
+  const unpaid = await rep.unpaidInvoices(addDays(today, 10));
+  assert.deepEqual(unpaid.map(u => [u.billName, u.days, u.pence]), [['Dave Price', 10, 35000]]);
+
+  // Reminders were sent today to Sarah's two cars and Dave's car (MOT and service).
+  let conv = await rep.reminderConversion(today, today);
+  assert.equal(conv.reduce((s, r) => s + r.sent, 0), 4);
+  // Dave's car had an MOT and a service reminder, then was invoiced: both count.
+  assert.deepEqual(conv.filter(r => r.converted).map(r => r.kind).sort(), ['mot-7', 'service-14']);
+  // Sarah books XY99 ZZZ after her reminder: that reminder now counts as converted.
+  let slot = addDays(today, 3);
+  while (!isOpenDay(slot)) slot = addDays(slot, 1);
+  await createBooking(req(15, { date: slot, reg: 'XY99 ZZZ' }));
+  conv = await rep.reminderConversion(today, today);
+  assert.equal(conv.find(r => r.kind === 'mot-30')!.converted, 1);
+  assert.equal(conv.reduce((s, r) => s + r.converted, 0), 3);
+});

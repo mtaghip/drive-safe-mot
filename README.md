@@ -49,7 +49,7 @@ Modelled on the TG Performance admin, rebuilt for a garage.
 | Role | Can |
 | --- | --- |
 | Owner | Everything, including the Team page |
-| Manager | Everything except managing staff; can void invoices and delete customers |
+| Manager | Everything except managing staff; can void invoices, delete customers and see Reports |
 | Staff | Diary, customers, invoices (create, issue, mark paid, email), reminders |
 | Viewer | See everything, change nothing |
 
@@ -63,6 +63,8 @@ Disabling someone or resetting their password signs them out at once. There must
 
 - **VAT:** set `COMPANY.vatNumber` in `lib/site.ts` if the garage is VAT registered. Invoices then charge VAT per line (20% by default) and show the breakdown. The MOT test fee is always outside the scope of VAT. With no VAT number, invoices show no VAT at all.
 - **Company details:** a limited company must show its registered name, number and office on invoices. Fill in `COMPANY` in `lib/site.ts`; staff see a warning on invoices until they're set. Bank details there are printed for bank-transfer payments.
+
+**Reports** (owner and manager). Unpaid invoices right now, oldest first, with how long each has waited. Then, for a chosen period (this month, last month, last 3 months, this year, last 12 months, or custom dates): money taken by day, week or month with the split by payment method; average invoice and total invoiced; jobs booked by service and invoiced amounts by type of work; online versus phone bookings, with cancellations; and how many reminders brought customers back (the same car booked in, not cancelled, or invoiced within 60 days). **Download CSV for the accountant** exports the period's paid invoices (number, dates, method, customer, registration, net, VAT, total).
 
 **Reminders.** Each morning's 8:30 run emails customers about 30 and 7 days before an MOT runs out and 14 days before a service, with a link to book and a link to stop reminders (which asks for a click, so email scanners can't unsubscribe people). Each reminder goes once per vehicle and due date. The Reminders page lists what's due in the next 45 days and what ran out in the last 60, flagging customers with no email or who opted out so staff can call them. The garage's diary email lists the reminders sent that morning.
 
@@ -96,6 +98,7 @@ Each day is only sent once, even if the scheduler retries. If sending fails, the
 - `lib/customers.ts`, `lib/vehicle-lookup.ts`: customers, vehicles, DVLA lookup
 - `lib/invoices.ts`, `lib/invoice-calc.ts`, `lib/invoice-document.ts`: invoices, VAT and MOT-date rules, the printed/emailed layout
 - `lib/reminders.ts`, `lib/reminder-rules.ts`: customer reminder emails
+- `lib/reports.ts`, `lib/report-periods.ts`, `app/admin/reports/`: the Reports page and CSV export
 - `lib/security.ts`: Turnstile and network-address hashing
 - `app/admin/`: staff pages and their server actions
 - `lib/email.ts`: confirmation and garage notification emails
