@@ -11,8 +11,8 @@ function Msg({ state }: { state: InvoiceState }) {
   return null;
 }
 
-export function PrintButton() {
-  return <button type="button" className="adm-btn" onClick={() => window.print()}>Print / save as PDF</button>;
+export function PrintButton({ label = 'Print / save as PDF' }: { label?: string }) {
+  return <button type="button" className="adm-btn" onClick={() => window.print()}>{label}</button>;
 }
 
 export function EmailInvoiceForm({ id, email }: { id: number; email: string }) {

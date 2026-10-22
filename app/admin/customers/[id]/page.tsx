@@ -9,6 +9,9 @@ import { can } from '@/lib/roles.ts';
 import { addDays, fmtDate, fmtHour, todayIso } from '@/lib/schedule.ts';
 import { serviceById } from '@/lib/site.ts';
 import { lookupConfigured } from '@/lib/vehicle-lookup.ts';
+import { statusLabel } from '@/lib/job-status.ts';
+import { customerJobs } from '@/lib/jobs.ts';
+import { NewJobForm } from '../../jobs/JobForms.tsx';
 import { createInvoiceAction } from '../../invoices/actions.ts';
 import { deleteCustomerAction, deleteVehicleAction, setRemindersAction } from '../actions.ts';
 import { EditCustomerForm, VehicleForm } from '../Forms.tsx';
@@ -27,7 +30,7 @@ export default async function CustomerPage({ params, searchParams }: { params: P
   const c = Number.isInteger(id) ? await getCustomer(id) : null;
   if (!c) notFound();
   const { error } = await searchParams;
-  const [bookings, invoices] = await Promise.all([customerBookings(id), listInvoices({ customerId: id })]);
+  const [bookings, invoices, jobs] = await Promise.all([customerBookings(id), listInvoices({ customerId: id }), customerJobs(id)]);
   const write = can(me.role, 'write'), today = todayIso();
 
   return (
@@ -85,6 +88,23 @@ export default async function CustomerPage({ params, searchParams }: { params: P
           {c.vehicles.length === 0 && <li className="adm-muted">No vehicles yet.</li>}
         </ul>
         {write && <details className="adm-add"><summary className="adm-btn adm-btn--sm">Add vehicle</summary><VehicleForm customerId={c.id} lookup={lookupConfigured()} /></details>}
+      </section>
+
+      <section className="card">
+        <h2 className="adm-h2">Jobs</h2>
+        <ul className="adm-list">
+          {jobs.map(j => (
+            <li key={j.id} className="adm-row">
+              <Link href={`/admin/jobs/${j.id}`} className="adm-strong">Job {j.id}</Link>
+              <span className={`adm-jobstatus adm-jobstatus--${j.status}`}>{statusLabel(j.status)}</span>
+              <span>{j.reg}</span><span className="adm-muted">{j.requested}</span>
+              <span className="adm-muted" style={{ marginLeft: 'auto' }}>{fmtDate(j.createdAt.slice(0, 10))}</span>
+            </li>
+          ))}
+          {jobs.length === 0 && <li className="adm-muted">No jobs yet.</li>}
+        </ul>
+        {write && <details className="adm-add"><summary className="adm-btn adm-btn--sm">Open a job card (walk-in)</summary>
+          <NewJobForm customerId={c.id} vehicles={c.vehicles.map(v => ({ id: v.id, reg: v.reg }))} /></details>}
       </section>
 
       <section className="card">

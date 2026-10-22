@@ -12,6 +12,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const me = await currentStaff();
   const nav = me ? [
     { href: '/admin', label: 'Diary' },
+    { href: '/admin/workshop', label: 'Workshop' },
     { href: '/admin/customers', label: 'Customers' },
     { href: '/admin/invoices', label: 'Invoices' },
     { href: '/admin/reminders', label: 'Reminders' },

@@ -138,3 +138,55 @@ test('reports: takings, work, unpaid, sources and reminder conversion', async ()
   assert.equal(conv.find(r => r.kind === 'mot-30')!.converted, 1);
   assert.equal(conv.reduce((s, r) => s + r.converted, 0), 3);
 });
+
+test('job cards: from booking to collection to invoice', async () => {
+  const jobs = await import('./jobs.ts');
+  const me = { id: null as unknown as number, name: 'Tester' };
+  let day = addDays(todayIso(), 5);
+  while (!isOpenDay(day)) day = addDays(day, 1);
+  await createBooking(req(9, { date: day, service: 'dpf', name: 'Jo Job', phone: '07700 555111', email: 'jo@example.com', reg: 'JB01 AAA' }));
+  const b = (await store().dayBookings(day)).find(x => x.hour === 9)!;
+
+  const id = await jobs.jobFromBooking(b.id, me);
+  assert.equal(await jobs.jobFromBooking(b.id, me), id, 'opening again returns the same job');
+  let job = (await jobs.getJob(id))!;
+  assert.deepEqual([job.status, job.reg, job.requested, job.customerName], ['booked', 'JB01 AAA', 'DPF clean', 'Jo Job']);
+  assert.deepEqual(job.tasks.map(t => t.description), ['DPF clean']);
+  assert.equal(job.bookingDate, day);
+
+  await jobs.updateJob(id, { requested: 'DPF clean, warning light on', mileageIn: 81234, mechanicId: null, notes: 'Keys in drawer 2' });
+  await jobs.addTask(id, 'Check EGR valve');
+  job = (await jobs.getJob(id))!;
+  await jobs.setTaskDone(job.tasks[0].id, true);
+
+  assert.match(String(await jobs.setJobStatus(id, 'collected', me)), /isn’t allowed/, 'cannot skip to collected');
+  for (const s of ['in_progress', 'waiting_parts', 'in_progress', 'ready'] as const) assert.equal(await jobs.setJobStatus(id, s, me), null, s);
+  job = (await jobs.getJob(id))!;
+  assert.deepEqual([job.status, job.tasksDone, job.tasksTotal, job.mileageIn], ['ready', 1, 2, 81234]);
+  assert.deepEqual(job.events.map(e => e.status), ['booked', 'in_progress', 'waiting_parts', 'in_progress', 'ready']);
+  assert.ok((await jobs.boardJobs(todayIso())).some(j => j.id === id));
+
+  // Photos: type and count limits.
+  assert.equal(await jobs.addPhoto(id, 'image/jpeg', new Uint8Array([255, 216, 255, 0]), me), null);
+  assert.match(String(await jobs.addPhoto(id, 'application/pdf', new Uint8Array([1]), me)), /JPEG/);
+  const photo = await jobs.getPhoto((await jobs.getJob(id))!.photoList[0].id);
+  assert.equal(photo!.mime, 'image/jpeg');
+  assert.equal(Buffer.from(photo!.data).toString('hex'), 'ffd8ff00');
+
+  // Invoice: booked service at its price, the other task to price, mileage carried over.
+  assert.equal(await jobs.invoiceState(job), 'none');
+  const invId = await jobs.invoiceForJob(id, me);
+  assert.equal(await jobs.invoiceForJob(id, me), invId, 'one invoice per job');
+  const draft = (await inv.getInvoice(invId))!;
+  assert.deepEqual(draft.lines.map(l => [l.description, l.unitPence]), [['DPF clean', 15000], ['Check EGR valve', 0]]);
+  assert.equal(draft.mileage, 81234);
+  assert.equal(await jobs.setJobStatus(id, 'collected', me), null);
+  assert.ok(!(await jobs.boardJobs(addDays(todayIso(), 1))).some(j => j.id === id), 'collected jobs leave the board after the day');
+
+  // Cancelling a booking cancels a job that hasn't started.
+  await createBooking(req(10, { date: day, name: 'Jo Job', phone: '07700 555111', email: 'jo@example.com', reg: 'JB01 AAA' }));
+  const b2 = (await store().dayBookings(day)).find(x => x.hour === 10)!;
+  const id2 = await jobs.jobFromBooking(b2.id, me);
+  await jobs.cancelJobForBooking(b2.id, me);
+  assert.equal((await jobs.getJob(id2))!.status, 'cancelled');
+});

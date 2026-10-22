@@ -6,6 +6,9 @@ import { BOOKING, serviceById } from '@/lib/site.ts';
 import { store } from '@/lib/store.ts';
 import { addBlock, cancelBooking, removeBlock } from './actions.ts';
 import { createInvoiceAction } from './invoices/actions.ts';
+import { openJobFromBookingAction } from './jobs/actions.ts';
+import { statusLabel } from '@/lib/job-status.ts';
+import { jobsForBookings } from '@/lib/jobs.ts';
 import { dailyEmailTo } from '@/lib/daily-email.ts';
 import { ConfirmButton, EmailDayButton, MoveForm, PhoneBookingForm, RefSearch } from './Forms.tsx';
 
@@ -27,6 +30,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     s.dayBookings(date), s.blocks(date, date), s.countsByDay(today, stripEnd), s.blocks(today, stripEnd), s.blocks(today, addDays(today, 365)),
   ]);
 
+  const jobs = await jobsForBookings(bookings.map(b => b.id));
   const closedBlock = dayBlocks.find(b => b.hour == null);
   const regular = closureLabel(date);
   const closed = !!(closedBlock || regular);
@@ -107,10 +111,17 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                       <span>Ref {b.ref}</span>
                       <span>Booked {b.createdAt}</span>
                     </div>
+                    {jobs[b.id] && (
+                      <div><Link href={`/admin/jobs/${jobs[b.id].id}`} className={`adm-jobstatus adm-jobstatus--${jobs[b.id].status}`}>Job {jobs[b.id].id} · {statusLabel(jobs[b.id].status)}</Link></div>
+                    )}
                     {write && <div className="adm-actions">
+                      {!jobs[b.id] && b.customerId && (
+                        <form action={openJobFromBookingAction}><input type="hidden" name="bookingId" value={b.id} />
+                          <button className="adm-btn">Job card</button></form>
+                      )}
                       {b.customerId && (
                         <form action={createInvoiceAction}><input type="hidden" name="bookingId" value={b.id} />
-                          <button className="adm-btn">Invoice</button></form>
+                          <button className="adm-btn adm-btn--ghost">Invoice</button></form>
                       )}
                       <details><summary className="adm-btn adm-btn--ghost">Move</summary><MoveForm id={b.id} date={b.date} hour={b.hour} /></details>
                       <form action={cancelBooking}><input type="hidden" name="id" value={b.id} />

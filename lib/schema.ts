@@ -146,6 +146,63 @@ CREATE TABLE IF NOT EXISTS invoice_items (
 );
 CREATE INDEX IF NOT EXISTS invoice_items_invoice ON invoice_items (invoice_id);
 
+-- Job cards: the work on a car from arrival to collection. One per booking at most.
+CREATE TABLE IF NOT EXISTS jobs (
+  id             serial PRIMARY KEY,
+  status         text NOT NULL DEFAULT 'booked'
+                 CHECK (status IN ('booked', 'in_progress', 'waiting_parts', 'ready', 'collected', 'cancelled')),
+  booking_id     integer UNIQUE REFERENCES bookings(id) ON DELETE SET NULL,
+  customer_id    integer NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+  vehicle_id     integer REFERENCES vehicles(id) ON DELETE SET NULL,
+  reg            text NOT NULL DEFAULT '',
+  -- What the customer asked for, in their words.
+  requested      text NOT NULL DEFAULT '',
+  mileage_in     integer,
+  mechanic_id    integer REFERENCES staff(id) ON DELETE SET NULL,
+  -- Workshop notes: staff only, never printed for the customer.
+  notes          text NOT NULL DEFAULT '',
+  invoice_id     integer REFERENCES invoices(id) ON DELETE SET NULL,
+  created_by     integer REFERENCES staff(id) ON DELETE SET NULL,
+  created_at     timestamptz NOT NULL DEFAULT now(),
+  status_at      timestamptz NOT NULL DEFAULT now(),
+  updated_at     timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS jobs_status ON jobs (status);
+CREATE INDEX IF NOT EXISTS jobs_customer ON jobs (customer_id);
+
+-- The work to do on a job, ticked off as it's done.
+CREATE TABLE IF NOT EXISTS job_tasks (
+  id          serial PRIMARY KEY,
+  job_id      integer NOT NULL REFERENCES jobs(id) ON DELETE CASCADE,
+  position    integer NOT NULL,
+  description text NOT NULL,
+  done        boolean NOT NULL DEFAULT false
+);
+CREATE INDEX IF NOT EXISTS job_tasks_job ON job_tasks (job_id);
+
+-- Photos taken in the workshop, resized in the browser before upload.
+CREATE TABLE IF NOT EXISTS job_photos (
+  id         serial PRIMARY KEY,
+  job_id     integer NOT NULL REFERENCES jobs(id) ON DELETE CASCADE,
+  mime       text NOT NULL,
+  data       bytea NOT NULL,
+  bytes      integer NOT NULL,
+  created_by integer REFERENCES staff(id) ON DELETE SET NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS job_photos_job ON job_photos (job_id);
+
+-- The job's timeline: every status change, who made it and when.
+CREATE TABLE IF NOT EXISTS job_events (
+  id         serial PRIMARY KEY,
+  job_id     integer NOT NULL REFERENCES jobs(id) ON DELETE CASCADE,
+  at         timestamptz NOT NULL DEFAULT now(),
+  staff_name text NOT NULL DEFAULT '',
+  status     text NOT NULL,
+  note       text NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS job_events_job ON job_events (job_id);
+
 -- Each reminder goes once per vehicle, kind and due date.
 CREATE TABLE IF NOT EXISTS reminder_sends (
   id         serial PRIMARY KEY,

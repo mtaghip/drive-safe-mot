@@ -7,6 +7,7 @@ import { buildDailyEmail, dailyEmailTo, loadDaySchedule } from '@/lib/daily-emai
 import { send, sendBookingEmails } from '@/lib/email.ts';
 import { isIsoDate, isOpenDay, isSlotHour, todayIso } from '@/lib/schedule.ts';
 import { fmtHour, fmtShort } from '@/lib/schedule.ts';
+import { cancelJobForBooking } from '@/lib/jobs.ts';
 import { createBooking, SlotTakenError, store } from '@/lib/store.ts';
 import { validatePhoneBooking, type FieldErrors } from '@/lib/validation.ts';
 
@@ -53,6 +54,7 @@ export async function cancelBooking(form: FormData) {
   const me = await requireStaff('write');
   const b = await store().byId(int(form, 'id'));
   await store().cancel(int(form, 'id'));
+  await cancelJobForBooking(int(form, 'id'), me);
   if (b) await audit(me, 'Cancelled booking', 'booking', b.id, `${b.ref} · ${b.reg} · ${fmtShort(b.date)} ${fmtHour(b.hour)}`);
   revalidatePath('/admin');
 }

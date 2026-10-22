@@ -478,7 +478,12 @@ details[open] > summary.adm-btn { background: var(--navy); color: #fff; border-c
   .page-body { padding: 0 !important; }
   .wrap { padding: 0 !important; max-width: none !important; }
   .invoice-paper { box-shadow: none; border-radius: 0; }
+  .print-only { display: block !important; }
+  .adm-page button, .adm-page .adm-btn { display: none !important; }
+  .adm-page .card { box-shadow: none; border: 1px solid var(--line); break-inside: avoid; }
+  .adm-h1 { line-height: 1.25; }
 }
+.print-only { display: none; }
 
 /* ---------- Staff: reports and charts ---------- */
 .adm-h3 { margin: 0; font-size: 16px; font-weight: 800; }
@@ -526,3 +531,47 @@ details[open] > summary.adm-btn { background: var(--navy); color: #fff; border-c
 .viz-legend li { display: flex; align-items: center; gap: 7px; }
 .viz-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
 .viz-legend--hover { text-decoration: underline; }
+
+/* ---------- Staff: job cards and workshop board ---------- */
+.adm-page--wide { max-width: 1480px; }
+.adm-plate-lg { font-size: .7em; vertical-align: middle; }
+.adm-count { font-size: 14px; font-weight: 600; margin-left: 6px; }
+.adm-jobstatus { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: 3px 9px; border-radius: 6px; background: var(--muted-bg); color: var(--ink-2); text-decoration: none; }
+a.adm-jobstatus:hover { filter: brightness(.96); color: var(--ink-2); }
+.adm-jobstatus--in_progress { background: #dfe8f6; color: #1d4f91; }
+.adm-jobstatus--waiting_parts { background: var(--amber-tint); color: #8a5a00; }
+.adm-jobstatus--ready { background: #dff1e7; color: var(--success); }
+.adm-jobstatus--collected { background: var(--muted-bg); color: var(--muted); }
+.adm-jobstatus--cancelled { background: #fbe3de; color: var(--error); text-decoration: line-through; }
+
+.adm-tasks { list-style: none; margin: 12px 0 0; padding: 0; }
+.adm-tasks li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.adm-tasks li:last-child { border-bottom: 0; }
+.adm-task { flex: 1; font-size: 16px; min-height: 32px; }
+.adm-task input { width: 22px; height: 22px; accent-color: var(--success); flex: none; }
+.adm-task--done .adm-task span { text-decoration: line-through; color: var(--muted); }
+.adm-photos { list-style: none; margin: 12px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.adm-photos li { display: flex; flex-direction: column; gap: 6px; }
+.adm-photos img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; display: block; background: var(--muted-bg); }
+.adm-timeline { list-style: none; margin: 12px 0 0; padding: 0; font-size: 14px; }
+.adm-timeline li { padding: 6px 0 6px 16px; border-left: 2px solid var(--line); position: relative; }
+.adm-timeline li::before { content: ''; position: absolute; left: -5px; top: 12px; width: 8px; height: 8px; border-radius: 50%; background: var(--navy); }
+
+.adm-board { display: grid; grid-template-columns: repeat(5, minmax(220px, 1fr)); gap: 12px; align-items: start; overflow-x: auto; padding-bottom: 6px; }
+.adm-board__col { background: #ebe7dd; border-radius: 14px; padding: 10px; min-width: 0; border-top: 4px solid var(--line-3); }
+.adm-board__col--in_progress { border-top-color: #2a78d6; }
+.adm-board__col--waiting_parts { border-top-color: #eda100; }
+.adm-board__col--ready { border-top-color: var(--success); }
+.adm-board__title { margin: 4px 4px 10px; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; display: flex; justify-content: space-between; }
+.adm-board__title span { color: var(--muted); }
+.adm-board__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.adm-board__empty { color: var(--muted); font-size: 14px; padding: 8px 4px; }
+.adm-jobcard { background: #fff; border-radius: 10px; box-shadow: 0 1px 2px rgba(15,35,64,.08); }
+.adm-jobcard__link { display: flex; flex-direction: column; gap: 4px; padding: 12px; color: var(--ink); text-decoration: none; font-size: 14px; }
+.adm-jobcard__link:hover { color: var(--ink); background: var(--amber-wash); border-radius: 10px; }
+.adm-jobcard__head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.adm-jobcard__car { font-weight: 700; }
+.adm-jobcard__work { color: var(--ink-2); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.adm-jobcard__meta { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 12px; color: var(--muted); }
+.adm-jobcard__move { width: calc(100% - 24px); margin: 0 12px 12px; }
+@media (max-width: 900px) { .adm-board { grid-template-columns: 1fr; overflow: visible; } }

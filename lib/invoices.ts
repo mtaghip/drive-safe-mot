@@ -81,21 +81,29 @@ function bookingLine(service: string): Line {
 }
 
 /** A new draft for a customer (and vehicle), optionally started from a booking. */
-export async function createDraft(o: { customerId: number; vehicleId?: number | null; booking?: StoredBooking | null; staffId: number }) {
-  const customer = await getCustomer(o.customerId);
+export async function createDraft(o: {
+  customerId: number; vehicleId?: number | null; booking?: StoredBooking | null; staffId: number;
+  /** Extra lines after the booked service, e.g. a job card's tasks to price. */
+  lines?: Line[]; mileage?: number | null; tx?: Db;
+}) {
+  // Read within the caller's transaction when there is one (the embedded test database runs one query at a time).
+  const q = o.tx ?? db;
+  const customer = await getCustomer(o.customerId, q);
   if (!customer) throw new Error('Customer not found');
   const vehicleId = o.vehicleId ?? o.booking?.vehicleId ?? customer.vehicles[0]?.id ?? null;
-  const vehicle = vehicleId ? await getVehicle(vehicleId) : null;
-  return db.tx(async tx => {
+  const vehicle = vehicleId ? await getVehicle(vehicleId, q) : null;
+  const run = async (tx: Db) => {
     const { rows } = await tx.query<{ id: number }>(
-      `INSERT INTO invoices (customer_id, vehicle_id, booking_id, bill_name, bill_address, bill_phone, bill_email, reg, vehicle_desc, created_by)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
+      `INSERT INTO invoices (customer_id, vehicle_id, booking_id, bill_name, bill_address, bill_phone, bill_email, reg, vehicle_desc, mileage, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
       [customer.id, vehicle?.id ?? null, o.booking?.id ?? null, customer.name, customer.address, customer.phone, customer.email,
-        vehicle?.reg ?? o.booking?.reg ?? '', vehicle ? vehicleDescription(vehicle) : '', o.staffId]);
+        vehicle?.reg ?? o.booking?.reg ?? '', vehicle ? vehicleDescription(vehicle) : '', o.mileage ?? null, o.staffId]);
     const id = rows[0].id;
-    if (o.booking) await writeLines(tx, id, [bookingLine(o.booking.service)]);
+    const lines = [...(o.booking ? [bookingLine(o.booking.service)] : []), ...(o.lines ?? [])];
+    if (lines.length) await writeLines(tx, id, lines);
     return id;
-  });
+  };
+  return o.tx ? run(o.tx) : db.tx(run);
 }
 
 async function writeLines(tx: Db, id: number, lines: Line[]) {
