@@ -113,7 +113,7 @@ The Google map only loads after the visitor clicks "Show map", since Google sets
 
 - The three reviews on the home page are placeholders. Swap in real Google reviews in `REVIEWS` in `lib/site.ts`.
 - Tyre change, servicing and tuning show "Call" for price until real prices are added.
-- Company name, number, registered office, VAT number (if any) and bank details for invoices, in `COMPANY` in `lib/site.ts`.
+- Bank details for invoices (optional, for bank-transfer payments), in `COMPANY` in `lib/site.ts`.
 
 ## Design source
 

@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import BottomBar from '@/components/BottomBar.tsx';
 import Header from '@/components/Header.tsx';
-import { ADDRESS_ONE_LINE, EMAIL, NAV, PHONE_DISPLAY, PHONE_HREF, siteUrl } from '@/lib/site.ts';
+import { ADDRESS_ONE_LINE, COMPANY, EMAIL, NAV, PHONE_DISPLAY, PHONE_HREF, siteUrl } from '@/lib/site.ts';
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'AutoRepair',
   name: 'Drive Safe MOT Centre',
+  legalName: COMPANY.legalName,
   url: siteUrl(),
   telephone: '+441582729943',
   email: EMAIL,
@@ -33,7 +34,10 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
             <Link href="/privacy">Privacy</Link>
           </nav>
         </div>
-        <div className="wrap site-footer__legal">© {new Date().getFullYear()} Drive Safe MOT Centre</div>
+        <div className="wrap site-footer__legal">
+          © {new Date().getFullYear()} {COMPANY.legalName}, trading as {COMPANY.tradingName}. Registered in England and Wales, company no. {COMPANY.companyNumber}.
+          Registered office: {COMPANY.registeredOffice}.
+        </div>
         <div className="footer-spacer" />
       </footer>
       <BottomBar />

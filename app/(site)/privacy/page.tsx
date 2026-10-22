@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ADDRESS_ONE_LINE, EMAIL, PHONE_DISPLAY, PHONE_HREF } from '@/lib/site.ts';
+import { ADDRESS_ONE_LINE, COMPANY, EMAIL, PHONE_DISPLAY, PHONE_HREF } from '@/lib/site.ts';
 
 export const metadata: Metadata = {
   title: 'Privacy notice',
@@ -23,7 +23,7 @@ export default function PrivacyPage() {
           <p className="prose__updated">Last updated {UPDATED}</p>
 
           <h2>Who we are</h2>
-          <p>Drive Safe MOT Centre, {ADDRESS_ONE_LINE}, is responsible for the personal information you give us through this website. If you have any questions, call us on <a href={PHONE_HREF}>{PHONE_DISPLAY}</a>, email <a href={`mailto:${EMAIL}`}>{EMAIL}</a> or ask at the counter.</p>
+          <p>{COMPANY.legalName} (company no. {COMPANY.companyNumber}), trading as {COMPANY.tradingName}, {ADDRESS_ONE_LINE}, is responsible for the personal information you give us through this website. If you have any questions, call us on <a href={PHONE_HREF}>{PHONE_DISPLAY}</a>, email <a href={`mailto:${EMAIL}`}>{EMAIL}</a> or ask at the counter.</p>
 
           <h2>What we collect</h2>
           <p>When you book online we collect your name, phone number, email address, your vehicle registration, the service you chose and the time of your booking.</p>

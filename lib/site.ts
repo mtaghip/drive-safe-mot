@@ -13,10 +13,10 @@ export function siteUrl(): string {
 export const COMPANY = {
   tradingName: 'Drive Safe MOT Centre',
   /** Registered company name, e.g. 'Drive Safe Ltd'. */
-  legalName: '' as string,
-  companyNumber: '' as string,
-  registeredOffice: '' as string,
-  /** Leave empty if not VAT registered: invoices then show no VAT at all. */
+  legalName: 'Drive Safe Limited' as string,
+  companyNumber: '15967320' as string,
+  registeredOffice: '21 Taylor Street, Luton, England, LU2 0EY' as string,
+  /** Not VAT registered, so invoices show no VAT. Add the number here if that changes. */
   vatNumber: '' as string,
   /** For customers paying by bank transfer. Leave empty to leave it off invoices. */
   bank: { accountName: '', sortCode: '', accountNumber: '' },
