@@ -6,6 +6,27 @@ export function siteUrl(): string {
   return url.replace(/\/$/, '');
 }
 
+/**
+ * Details printed on invoices. Fill in the blanks before issuing real invoices:
+ * a limited company must show its registered name, number and office.
+ */
+export const COMPANY = {
+  tradingName: 'Drive Safe MOT Centre',
+  /** Registered company name, e.g. 'Drive Safe Ltd'. */
+  legalName: '' as string,
+  companyNumber: '' as string,
+  registeredOffice: '' as string,
+  /** Leave empty if not VAT registered: invoices then show no VAT at all. */
+  vatNumber: '' as string,
+  /** For customers paying by bank transfer. Leave empty to leave it off invoices. */
+  bank: { accountName: '', sortCode: '', accountNumber: '' },
+  paymentTerms: 'Payment is due on collection of the vehicle.',
+  /** Issued invoices are numbered from here, without gaps. */
+  firstInvoiceNumber: 1001,
+};
+export const VAT_REGISTERED = COMPANY.vatNumber.trim() !== '';
+export const STANDARD_VAT_RATE = 20;
+
 export const PHONE_DISPLAY = '01582 729943';
 export const PHONE_HREF = 'tel:01582729943';
 export const EMAIL = 'drivesafeltd@outlook.com';

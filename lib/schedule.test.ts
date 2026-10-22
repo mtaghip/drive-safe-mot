@@ -1,7 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { addDays, bankHolidays, bookingRange, closedReason, isIsoDate, isOpenDay, monthsInRange, nextFreeSlot, todayIso } from './schedule.ts';
-import { makeSession, sessionValid } from './security.ts';
 import { validateBooking, validatePhoneBooking } from './validation.ts';
 
 test('today uses UK time, not UTC', () => {
@@ -101,13 +100,4 @@ test('phone bookings allow today, beyond 4 weeks, and no email', () => {
   }
   assert.ok(!validatePhoneBooking({ ...good, date: '2026-10-18' }, now).ok);
   assert.ok(!validatePhoneBooking({ ...good, email: 'bad' }, now).ok);
-});
-
-test('staff sessions are signed and expire', () => {
-  const t = Date.now(), s = makeSession('correct horse battery', t);
-  assert.ok(sessionValid(s, 'correct horse battery', t));
-  assert.ok(!sessionValid(s, 'a different password', t));
-  assert.ok(!sessionValid(s.replace(/^\d+/, String(t + 1e12)), 'correct horse battery', t));
-  assert.ok(!sessionValid(s, 'correct horse battery', t + 15 * 86_400_000));
-  assert.ok(!sessionValid(undefined, 'correct horse battery', t));
 });

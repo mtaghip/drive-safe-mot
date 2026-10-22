@@ -3,7 +3,7 @@ import { ADDRESS_ONE_LINE, EMAIL, PHONE_DISPLAY, serviceById } from './site.ts';
 import { fmtHour, fmtLong } from './schedule.ts';
 import type { Booking } from './store.ts';
 
-type Mail = { to: string; subject: string; text: string; html?: string; replyTo?: string };
+type Mail = { to: string; subject: string; text: string; html?: string; replyTo?: string; headers?: Record<string, string> };
 
 export async function send(mail: Mail) {
   const key = process.env.RESEND_API_KEY, from = process.env.BOOKING_FROM_EMAIL;
@@ -15,7 +15,7 @@ export async function send(mail: Mail) {
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from, to: [mail.to], subject: mail.subject, text: mail.text, html: mail.html, reply_to: mail.replyTo }),
+    body: JSON.stringify({ from, to: [mail.to], subject: mail.subject, text: mail.text, html: mail.html, reply_to: mail.replyTo, headers: mail.headers }),
   });
   if (!res.ok) throw new Error(`Resend responded ${res.status}: ${await res.text()}`);
 }

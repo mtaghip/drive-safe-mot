@@ -1,5 +1,5 @@
 // Request helpers for spam protection and the staff login.
-import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
+import { createHash } from 'node:crypto';
 
 /** First address in X-Forwarded-For (set by the host's proxy), else X-Real-IP. */
 export function clientIp(headers: Headers): string {
@@ -27,29 +27,4 @@ export async function verifyTurnstile(token: unknown, ip: string): Promise<boole
     console.error('[turnstile] verification request failed', err);
     return false;
   }
-}
-
-// ---- Staff sessions: a signed, expiring cookie. Changing ADMIN_PASSWORD signs everyone out. ----
-
-export const ADMIN_COOKIE = 'ds_admin';
-export const ADMIN_SESSION_DAYS = 14;
-
-const sha = (s: string) => createHash('sha256').update(s).digest();
-const sign = (payload: string, password: string) => createHmac('sha256', sha('ds-admin:' + password)).update(payload).digest('base64url');
-
-export function passwordMatches(attempt: string, password: string): boolean {
-  return timingSafeEqual(sha(attempt), sha(password));
-}
-
-export function makeSession(password: string, now = Date.now()): string {
-  const exp = String(now + ADMIN_SESSION_DAYS * 86_400_000);
-  return exp + '.' + sign(exp, password);
-}
-
-export function sessionValid(value: string | undefined, password: string, now = Date.now()): boolean {
-  if (!value) return false;
-  const [exp, sig] = value.split('.');
-  if (!exp || !sig || Number(exp) < now) return false;
-  const expected = Buffer.from(sign(exp, password)), given = Buffer.from(sig);
-  return expected.length === given.length && timingSafeEqual(expected, given);
 }

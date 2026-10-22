@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef } from 'react';
 import { BOOKING, SERVICES } from '@/lib/site.ts';
 import { fmtHour } from '@/lib/schedule.ts';
 import { addPhoneBooking, emailDaySchedule, findRef, moveBooking } from './actions.ts';
+import { keepValues } from './keep-values.ts';
 
 /** Submit button that asks first. */
 export function ConfirmButton({ children, message, className = 'adm-btn adm-btn--ghost' }: { children: React.ReactNode; message: string; className?: string }) {
@@ -24,7 +25,7 @@ export function PhoneBookingForm({ date, hour }: { date: string; hour: number })
   const ref = useCloseOnSuccess(state?.ok);
   const err = state?.errors ?? {};
   return (
-    <form ref={ref} action={action} className="adm-form">
+    <form ref={ref} onSubmit={keepValues(action)} className="adm-form">
       <input type="hidden" name="date" value={date} />
       <input type="hidden" name="hour" value={hour} />
       <div className="field"><label>Service</label>
@@ -44,7 +45,7 @@ export function MoveForm({ id, date, hour }: { id: number; date: string; hour: n
   const [state, action, pending] = useActionState(moveBooking, undefined);
   const ref = useCloseOnSuccess(state?.ok);
   return (
-    <form ref={ref} action={action} className="adm-form adm-form--row">
+    <form ref={ref} onSubmit={keepValues(action)} className="adm-form adm-form--row">
       <input type="hidden" name="id" value={id} />
       <div className="field"><label>New day</label><input name="date" type="date" defaultValue={date} required /></div>
       <div className="field"><label>Time</label>
@@ -59,7 +60,7 @@ export function MoveForm({ id, date, hour }: { id: number; date: string; hour: n
 export function EmailDayButton({ date, to }: { date: string; to: string }) {
   const [state, action, pending] = useActionState(emailDaySchedule, undefined);
   return (
-    <form action={action} className="adm-inline">
+    <form onSubmit={keepValues(action)} className="adm-inline">
       <input type="hidden" name="date" value={date} />
       <button className="adm-btn adm-btn--ghost" disabled={pending}>{pending ? 'Sending…' : 'Email this day’s schedule'}</button>
       {state?.ok && <span className="adm-muted" role="status">Sent to {to}</span>}
@@ -71,7 +72,7 @@ export function EmailDayButton({ date, to }: { date: string; to: string }) {
 export function RefSearch() {
   const [state, action, pending] = useActionState(findRef, undefined);
   return (
-    <form action={action} className="adm-inline">
+    <form onSubmit={keepValues(action)} className="adm-inline">
       <input name="ref" placeholder="Find reference, e.g. DS-AB12C" aria-label="Booking reference" required className="adm-input" />
       <button className="adm-btn adm-btn--ghost" disabled={pending}>Find</button>
       {state?.error && <span className="error-text" role="alert">{state.error}</span>}

@@ -2,6 +2,7 @@ import { timingSafeEqual } from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { buildDailyEmail, dailyEmailTo, loadDaySchedule } from '@/lib/daily-email.ts';
 import { send } from '@/lib/email.ts';
+import { sendDueReminders } from '@/lib/reminders.ts';
 import { todayIso, ukHour } from '@/lib/schedule.ts';
 import { DAILY_EMAIL_HOUR } from '@/lib/site.ts';
 import { store } from '@/lib/store.ts';
@@ -25,12 +26,18 @@ export async function GET(req: Request) {
 
   if (ukHour() !== DAILY_EMAIL_HOUR) return NextResponse.json({ skipped: `Only sends between ${DAILY_EMAIL_HOUR}:00 and ${DAILY_EMAIL_HOUR}:59 UK time.` });
   const date = todayIso(), s = store();
-  if (!(await s.claimDailyEmail(date))) return NextResponse.json({ skipped: `Already sent for ${date}.` });
 
+  // Customer MOT and service reminders. Each goes once, so running this on every trigger is safe.
+  const reminders = await sendDueReminders(date).catch(err => {
+    console.error('[reminders] run failed', err);
+    return { sent: [], failed: [] };
+  });
+
+  if (!(await s.claimDailyEmail(date))) return NextResponse.json({ skipped: `Diary already sent for ${date}.`, reminders: reminders.sent.length });
   try {
-    const mail = buildDailyEmail(await loadDaySchedule(s, date));
+    const mail = buildDailyEmail({ ...(await loadDaySchedule(s, date)), reminders: reminders.sent });
     await send({ to: dailyEmailTo(), ...mail });
-    return NextResponse.json({ sent: date, to: dailyEmailTo() });
+    return NextResponse.json({ sent: date, to: dailyEmailTo(), reminders: reminders.sent.length, reminderFailures: reminders.failed.length });
   } catch (err) {
     await s.releaseDailyEmail(date).catch(() => {});
     console.error('[daily-email] failed', err);

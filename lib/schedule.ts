@@ -112,6 +112,7 @@ export const daysInMonth = (firstIso: string) => {
 const fmt = (iso: string, opts: Intl.DateTimeFormatOptions) => toUtc(iso).toLocaleDateString('en-GB', { ...opts, timeZone: 'UTC' });
 export const fmtLong = (iso: string) => fmt(iso, { weekday: 'long', day: 'numeric', month: 'long' });
 export const fmtShort = (iso: string) => fmt(iso, { weekday: 'short', day: 'numeric', month: 'short' });
+export const fmtDate = (iso: string) => fmt(iso, { day: 'numeric', month: 'short', year: 'numeric' });
 export const fmtMonth = (iso: string) => fmt(iso, { month: 'long', year: 'numeric' });
 export const fmtHour = (h: number) => pad(h) + ':00';
 

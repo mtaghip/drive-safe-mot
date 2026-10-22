@@ -27,15 +27,19 @@ export default function PrivacyPage() {
 
           <h2>What we collect</h2>
           <p>When you book online we collect your name, phone number, email address, your vehicle registration, the service you chose and the time of your booking.</p>
+          <p>When we work on your vehicle we keep a customer record: your contact details and address, your vehicle&rsquo;s details (make, model, colour, year, mileage, and when its MOT and service are due), and the invoices for work we&rsquo;ve done. We may look up your vehicle&rsquo;s make, colour and MOT date from the DVLA using its registration.</p>
           <p>To protect the booking system from abuse we also keep a scrambled (hashed) version of your internet address for up to a day. We can&rsquo;t turn it back into your address.</p>
 
           <h2>Why we use it</h2>
           <ul>
             <li>To hold your slot, carry out the work you booked and contact you about it, for example if we need to move your appointment.</li>
             <li>To send you a booking confirmation by email.</li>
-            <li>To keep the records a garage needs for the work it carries out.</li>
+            <li>To keep the records a garage needs for the work it carries out, including invoices.</li>
+            <li>To email you a reminder before your MOT runs out or your service is due.</li>
           </ul>
-          <p>We use your details because you&rsquo;ve asked us to book work on your vehicle (UK GDPR Article 6(1)(b), performance of a contract). We don&rsquo;t use them for marketing, and we never sell them.</p>
+          <p>We use your details to book and carry out work on your vehicle (UK GDPR Article 6(1)(b), performance of a contract) and to keep the records the law requires (Article 6(1)(c)).
+            MOT and service reminders are sent in our legitimate interest in helping you keep your vehicle legal and safe (Article 6(1)(f)); every reminder has a link to stop them, or just tell us.
+            We don&rsquo;t send any other marketing, and we never sell your details.</p>
 
           <h2>Who we share it with</h2>
           <p>Only the companies that run this website for us, who may only use your details to provide that service:</p>

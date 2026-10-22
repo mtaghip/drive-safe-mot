@@ -1,6 +1,7 @@
 // The garage's morning email: today's timetable plus a glance at the week ahead.
 import { addDays, closureLabel, fmtHour, fmtLong, fmtShort } from './schedule.ts';
 import { BOOKING, EMAIL, serviceById, siteUrl } from './site.ts';
+import type { SentReminder } from './reminders.ts';
 import type { Block, StoredBooking } from './store.ts';
 
 export type DaySchedule = {
@@ -11,6 +12,8 @@ export type DaySchedule = {
   /** Single blocked slots on the day. */
   blocks: Block[];
   week: { date: string; booked: number; closed: string | null }[];
+  /** Customer reminders sent this morning, listed at the end. */
+  reminders?: SentReminder[];
 };
 
 type Store = {
@@ -68,6 +71,11 @@ export function buildDailyEmail(d: DaySchedule): { subject: string; text: string
   }
   lines.push('', 'Next 7 days:');
   for (const w of d.week) lines.push(`  ${fmtShort(w.date)}: ${w.closed ? `closed (${w.closed})` : `${w.booked} of ${total} booked`}`);
+  const sentReminders = d.reminders ?? [];
+  if (sentReminders.length) {
+    lines.push('', `Reminders emailed to customers this morning (${sentReminders.length}):`);
+    for (const r of sentReminders) lines.push(`  ${r.reg} · ${r.name} · ${reminderLabel(r.kind)} due ${fmtShort(r.due)}`);
+  }
   lines.push('', `Open the staff page: ${adminUrl}`);
   const text = lines.join('\n');
 
@@ -98,6 +106,8 @@ export function buildDailyEmail(d: DaySchedule): { subject: string; text: string
     ${d.closed && !booked ? '<p style="margin:14px 12px;color:#586377;">No bookings today.</p>' : `<table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;">${slotRows}</table>`}
     <div style="margin:22px 12px 0;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#586377;">Next 7 days</div>
     <table role="presentation" cellspacing="0" cellpadding="0" style="margin:6px 12px 0;border-collapse:collapse;">${weekRows}</table>
+    ${sentReminders.length ? `<div style="margin:22px 12px 0;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#586377;">Reminders emailed this morning</div>
+    <ul style="margin:6px 12px 0;padding-left:18px;font-size:14px;line-height:1.6;">${sentReminders.map(r => `<li>${esc(r.reg)} · ${esc(r.name)} · ${reminderLabel(r.kind)} due ${fmtShort(r.due)}</li>`).join('')}</ul>` : ''}
     <p style="margin:22px 12px 0;"><a href="${esc(adminUrl)}" style="display:inline-block;background:#f4b324;color:#0f2340;font-weight:800;text-decoration:none;padding:12px 18px;border-radius:8px;">Open the staff page</a></p>
   </div>
   <p style="font-size:12px;color:#586377;text-align:center;margin:14px 0 0;">Sent automatically every morning at 8:30.</p>
@@ -105,5 +115,7 @@ export function buildDailyEmail(d: DaySchedule): { subject: string; text: string
 
   return { subject, text, html };
 }
+
+const reminderLabel = (kind: string) => (kind.startsWith('mot') ? 'MOT' : 'Service');
 
 export const dailyEmailTo = () => process.env.GARAGE_EMAIL || EMAIL;

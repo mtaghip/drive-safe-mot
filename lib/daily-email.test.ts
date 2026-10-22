@@ -6,7 +6,7 @@ import type { StoredBooking } from './store.ts';
 
 const booking = (hour: number, extra: Partial<StoredBooking> = {}): StoredBooking => ({
   id: hour, ref: 'DS-AAAA' + hour, service: 'mot', date: '2026-10-20', hour, name: 'Sarah Miles', phone: '07700 900123',
-  email: 's@example.com', reg: 'AB12 CDE', source: 'online', createdAt: '2026-10-19 10:00', ...extra,
+  email: 's@example.com', reg: 'AB12 CDE', source: 'online', createdAt: '2026-10-19 10:00', customerId: 1, vehicleId: 1, ...extra,
 });
 const week = Array.from({ length: 7 }, (_, i) => ({ date: `2026-10-2${1 + i}`, booked: i, closed: i === 3 ? 'Saturday' : null }));
 const base: DaySchedule = { date: '2026-10-20', closed: null, bookings: [], blocks: [], week };

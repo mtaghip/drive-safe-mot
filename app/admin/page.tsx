@@ -1,9 +1,11 @@
 import Link from 'next/link';
-import { requireAdmin } from '@/lib/admin.ts';
+import { requireStaff } from '@/lib/auth.ts';
+import { can } from '@/lib/roles.ts';
 import { addDays, closureLabel, fmtHour, fmtLong, isIsoDate, isOpenDay, todayIso, weekday } from '@/lib/schedule.ts';
 import { BOOKING, serviceById } from '@/lib/site.ts';
 import { store } from '@/lib/store.ts';
 import { addBlock, cancelBooking, removeBlock } from './actions.ts';
+import { createInvoiceAction } from './invoices/actions.ts';
 import { dailyEmailTo } from '@/lib/daily-email.ts';
 import { ConfirmButton, EmailDayButton, MoveForm, PhoneBookingForm, RefSearch } from './Forms.tsx';
 
@@ -12,10 +14,11 @@ export const dynamic = 'force-dynamic';
 const STRIP_DAYS = 28;
 const dayName = (iso: string) => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][weekday(iso)];
 
-export default async function AdminPage({ searchParams }: { searchParams: Promise<{ date?: string }> }) {
-  await requireAdmin();
+export default async function AdminPage({ searchParams }: { searchParams: Promise<{ date?: string; denied?: string }> }) {
+  const me = await requireStaff();
+  const write = can(me.role, 'write');
   const today = todayIso();
-  const { date: q } = await searchParams;
+  const { date: q, denied } = await searchParams;
   const date = isIsoDate(q) ? q : today;
 
   const s = store();
@@ -32,6 +35,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
   return (
     <div className="wrap page-body adm-page">
+      {denied && <p className="adm-banner adm-banner--warn">Your role doesn’t have access to that. Ask the owner if you need it.</p>}
       <div className="adm-top">
         <div>
           <div className="adm-eyebrow">{date === today ? 'Today' : date < today ? 'Past day' : 'Bookings for'}</div>
@@ -68,13 +72,13 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       {closedBlock && (
         <div className="adm-banner adm-banner--warn">
           <span>Closed by staff{closedBlock.note ? `: ${closedBlock.note}` : ''}. Customers can&rsquo;t book this day.</span>
-          <form action={removeBlock}><input type="hidden" name="id" value={closedBlock.id} /><button className="adm-btn adm-btn--ghost">Reopen day</button></form>
+          {write && <form action={removeBlock}><input type="hidden" name="id" value={closedBlock.id} /><button className="adm-btn adm-btn--ghost">Reopen day</button></form>}
         </div>
       )}
       {closed && bookings.length > 0 && (
         <p className="adm-banner adm-banner--alert">This day is closed but still has {bookings.length} booking{bookings.length > 1 ? 's' : ''}. Call {bookings.length > 1 ? 'those customers' : 'the customer'} to move or cancel.</p>
       )}
-      {!closed && date >= today && (
+      {write && !closed && date >= today && (
         <form action={addBlock} className="adm-inline adm-closeday">
           <input type="hidden" name="date" value={date} />
           <input name="note" placeholder="Reason (optional), e.g. Staff holiday" aria-label="Reason for closing" className="adm-input" maxLength={200} />
@@ -97,26 +101,30 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                       <span className={'adm-badge' + (b.source === 'phone' ? ' adm-badge--phone' : '')}>{b.source === 'phone' ? 'Phone' : 'Online'}</span>
                     </div>
                     <div className="adm-slot__meta">
-                      <span>{b.name}</span>
+                      {b.customerId ? <Link href={`/admin/customers/${b.customerId}`} className="adm-strong">{b.name}</Link> : <span>{b.name}</span>}
                       <a href={`tel:${b.phone.replace(/[^\d+]/g, '')}`}>{b.phone}</a>
                       {b.email && <a href={`mailto:${b.email}`}>{b.email}</a>}
                       <span>Ref {b.ref}</span>
                       <span>Booked {b.createdAt}</span>
                     </div>
-                    <div className="adm-actions">
+                    {write && <div className="adm-actions">
+                      {b.customerId && (
+                        <form action={createInvoiceAction}><input type="hidden" name="bookingId" value={b.id} />
+                          <button className="adm-btn">Invoice</button></form>
+                      )}
                       <details><summary className="adm-btn adm-btn--ghost">Move</summary><MoveForm id={b.id} date={b.date} hour={b.hour} /></details>
                       <form action={cancelBooking}><input type="hidden" name="id" value={b.id} />
                         <ConfirmButton message={`Cancel ${b.name}'s booking (${b.reg}) at ${fmtHour(h)}? The slot will become free online.`}>Cancel booking</ConfirmButton>
                       </form>
-                    </div>
+                    </div>}
                   </>
                 ) : block ? (
                   <div className="adm-actions">
                     <span className="adm-muted">Blocked{block.note ? `: ${block.note}` : ''}</span>
-                    <form action={removeBlock}><input type="hidden" name="id" value={block.id} /><button className="adm-btn adm-btn--ghost">Unblock</button></form>
+                    {write && <form action={removeBlock}><input type="hidden" name="id" value={block.id} /><button className="adm-btn adm-btn--ghost">Unblock</button></form>}
                   </div>
-                ) : closed || date < today ? (
-                  <span className="adm-muted">—</span>
+                ) : closed || date < today || !write ? (
+                  <span className="adm-muted">{closed || date < today ? '—' : 'Free'}</span>
                 ) : (
                   <div className="adm-actions">
                     <span className="adm-muted">Free</span>
@@ -141,7 +149,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             {upcomingClosures.map(c => (
               <li key={c.id}>
                 <Link href={`/admin?date=${c.date}`}>{fmtLong(c.date)}</Link>{c.note && <span className="adm-muted"> · {c.note}</span>}
-                <form action={removeBlock}><input type="hidden" name="id" value={c.id} /><button className="adm-btn adm-btn--ghost adm-btn--sm">Reopen</button></form>
+                {write && <form action={removeBlock}><input type="hidden" name="id" value={c.id} /><button className="adm-btn adm-btn--ghost adm-btn--sm">Reopen</button></form>}
               </li>
             ))}
           </ul>
