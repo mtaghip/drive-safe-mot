@@ -1,48 +1,44 @@
 // Booking emails via the Resend HTTP API. Without RESEND_API_KEY they are logged instead.
-import { ADDRESS_ONE_LINE, EMAIL, PHONE_DISPLAY, serviceById } from './site.ts';
-import { fmtHour, fmtLong } from './schedule.ts';
+import { calendarLinks, customerConfirmation, garageNotice } from './booking-email.ts';
+import { EMAIL } from './site.ts';
 import type { Booking } from './store.ts';
 
-type Mail = { to: string; subject: string; text: string; html?: string; replyTo?: string; headers?: Record<string, string> };
+type Attachment = { filename: string; content: string; contentType?: string };
+type Mail = {
+  to: string; subject: string; text: string; html?: string; replyTo?: string; headers?: Record<string, string>;
+  /** Content is base64. */
+  attachments?: Attachment[];
+};
 
 export async function send(mail: Mail) {
   const key = process.env.RESEND_API_KEY, from = process.env.BOOKING_FROM_EMAIL;
   if (!key || !from) {
-    const { html, ...rest } = mail;
-    console.info('[email] RESEND_API_KEY or BOOKING_FROM_EMAIL not set; would send:\n' + JSON.stringify({ ...rest, html: html && `(${html.length} characters)` }, null, 2));
+    const { html, attachments, ...rest } = mail;
+    console.info('[email] RESEND_API_KEY or BOOKING_FROM_EMAIL not set; would send:\n' + JSON.stringify({
+      ...rest, html: html && `(${html.length} characters)`, attachments: attachments?.map(a => a.filename),
+    }, null, 2));
     return;
   }
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from, to: [mail.to], subject: mail.subject, text: mail.text, html: mail.html, reply_to: mail.replyTo, headers: mail.headers }),
+    body: JSON.stringify({ from, to: [mail.to], subject: mail.subject, text: mail.text, html: mail.html, reply_to: mail.replyTo, headers: mail.headers,
+      attachments: mail.attachments?.map(a => ({ filename: a.filename, content: a.content, content_type: a.contentType })) }),
   });
   if (!res.ok) throw new Error(`Resend responded ${res.status}: ${await res.text()}`);
 }
 
 /** Customer confirmation (when there's an email address) and, for online bookings, a notice to the garage. */
 export async function sendBookingEmails(b: Booking, { notifyGarage }: { notifyGarage: boolean }) {
-  const service = serviceById(b.service)!;
-  const when = `${fmtLong(b.date)}, ${fmtHour(b.hour)} – ${fmtHour(b.hour + 1)}`;
-  const details = [
-    `Reference: ${b.ref}`, `Service: ${service.name} (${service.summaryPrice})`, `When: ${when}`,
-    `Vehicle: ${b.reg}`, `Where: ${ADDRESS_ONE_LINE}`,
-  ].join('\n');
-
   const customer = !b.email ? Promise.resolve() : send({
     to: b.email,
-    subject: `You're booked in: ${service.name}, ${fmtLong(b.date)} at ${fmtHour(b.hour)}`,
-    text: `Hi ${b.name.split(' ')[0]},\n\nThanks for booking with Drive Safe MOT Centre.\n\n${details}\n\n` +
-      `Pay on the day. Need to change your slot? Call us on ${PHONE_DISPLAY} or reply to this email.\n\nDrive Safe MOT Centre`,
+    ...customerConfirmation(b),
     // Customer replies go to the garage's inbox, whatever address the email is sent from.
     replyTo: EMAIL,
+    // Opens as a calendar event in Outlook, Apple Mail and most phones.
+    attachments: [{ filename: `booking-${b.ref}.ics`, content: Buffer.from(calendarLinks(b).ics).toString('base64'), contentType: 'text/calendar' }],
   });
-  const garage = notifyGarage ? send({
-    to: process.env.GARAGE_EMAIL || EMAIL,
-    replyTo: b.email,
-    subject: `New booking ${b.ref}: ${service.name}, ${fmtLong(b.date)} ${fmtHour(b.hour)}, ${b.reg}`,
-    text: `${details}\n\nName: ${b.name}\nPhone: ${b.phone}\nEmail: ${b.email}`,
-  }) : Promise.resolve();
+  const garage = notifyGarage ? send({ to: process.env.GARAGE_EMAIL || EMAIL, replyTo: b.email || undefined, ...garageNotice(b) }) : Promise.resolve();
 
   // The booking is already saved, so a failed email is logged rather than shown to the customer.
   for (const r of await Promise.allSettled([customer, garage])) {
