@@ -159,8 +159,5 @@ export const SERVICES: Service[] = [
 
 export const serviceById = (id: string): Service | undefined => SERVICES.find(s => s.id === id);
 
-export const REVIEWS = [
-  { stars: 5, quote: "Booked online the night before, in and out within the hour. They showed me the advisories and didn't push any extra work.", name: 'Sarah M.', area: 'Stopsley' },
-  { stars: 5, quote: 'DPF light kept coming on. They cleaned the filter for a fraction of what the dealer quoted for a new one.', name: 'Imran K.', area: 'High Town' },
-  { stars: 5, quote: "Friendly lads, fair price, and they explained everything. I've used them for three years now.", name: 'Dave P.', area: 'Luton' },
-];
+/** The garage's reviews on Google (shared from Google Maps). */
+export const REVIEWS_URL = 'https://share.google/DVZ3q28dqE3C69T53';

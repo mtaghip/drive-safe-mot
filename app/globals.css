@@ -150,6 +150,13 @@ img { max-width: 100%; }
 .review blockquote { margin: 0; font-size: 18px; line-height: 1.5; text-wrap: pretty; }
 .review figcaption { margin-top: auto; font-size: 14px; font-weight: 700; }
 .review figcaption span { font-weight: 400; color: var(--muted); }
+.review figcaption a { color: inherit; }
+.reviews__summary { font-size: 16px; color: var(--navy); text-decoration: none; white-space: nowrap; }
+.reviews__summary strong { font-size: 20px; }
+.reviews__summary span { color: var(--amber-ink); }
+.reviews__empty { margin: 24px 0 0; font-size: 18px; }
+.reviews__more { margin: 28px 0 0; }
+.reviews__cta { display: inline-block; padding: 14px 22px; border-radius: 10px; }
 
 .find-us { display: flex; flex-wrap: wrap; gap: clamp(28px, 4vw, 56px); }
 .find-us__info { flex: 1 1 320px; min-width: 0; }

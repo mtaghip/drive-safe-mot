@@ -24,6 +24,8 @@ Without `DATABASE_URL`, development uses PGlite, an embedded Postgres that keeps
 | `SITE_URL` | Public address, e.g. `https://www.drivesafemot.co.uk`. Used in the sitemap, robots.txt and share previews, which are generated at build time, so set it before building. On Vercel the production domain is used automatically. |
 | `ADMIN_PASSWORD` | Setup password, needed once: at `/admin/login` on a new site it lets you create the owner account. After that everyone signs in with their own email and password, and this setting is no longer used. |
 | `DVLA_VES_API_KEY` | Optional. Enables the **Look up** button that fills in a vehicle's make, colour, year and MOT expiry from its registration. Free from [DVLA](https://register-for-ves.driver-vehicle-licensing.api.gov.uk/). |
+| `GOOGLE_PLACES_API_KEY` | Optional. Shows the Google rating and recent 4–5★ reviews on the home page (refreshed twice a day). Google Cloud → enable **Places API (New)** → create an API key restricted to it. Without it the home page links to the reviews on Google. |
+| `GOOGLE_PLACE_ID` | Optional. Only needed if the listing isn't found automatically by name and postcode. |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` | [Cloudflare Turnstile](https://dash.cloudflare.com/?to=/:account/turnstile) spam check on the booking form (free). Usually invisible to customers. The site key is baked in at build time. Leave both empty to turn it off. |
 | `DATABASE_URL` | Postgres connection string. All tables are created and kept up to date automatically on startup. |
 | `RESEND_API_KEY` | [Resend](https://resend.com) key for confirmation emails. |

@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { Tick } from '@/components/icons.tsx';
 import { Hours, MapEmbed } from '@/components/shared.tsx';
 import { bookingRange, fmtHour, fmtShort, nextFreeSlot } from '@/lib/schedule.ts';
-import { ADDRESS_LINES, PHONE_DISPLAY, PHONE_HREF, REVIEWS, SERVICES, SLOT_RANGE_TEXT } from '@/lib/site.ts';
+import { googleReviews, quotable } from '@/lib/google-reviews.ts';
+import { ADDRESS_LINES, PHONE_DISPLAY, PHONE_HREF, REVIEWS_URL, SERVICES, SLOT_RANGE_TEXT } from '@/lib/site.ts';
 import { availability } from '@/lib/store.ts';
 import garageFront from '@/public/images/garage-front.webp';
 
@@ -27,7 +28,9 @@ const TRUST = [
 ];
 
 export default async function HomePage() {
-  const nextSlot = await nextSlotLabel();
+  const [nextSlot, google] = await Promise.all([nextSlotLabel(), googleReviews()]);
+  const quotes = google ? quotable(google) : [];
+  const reviewsHref = google?.mapsUrl || REVIEWS_URL;
   return (
     <>
       <section className="navy hero">
@@ -92,17 +95,29 @@ export default async function HomePage() {
         <div className="wrap section--96">
           <div className="section-head">
             <h2 className="h2">What drivers say</h2>
-            <span className="section-head__note">Placeholder reviews. Replace with your Google reviews.</span>
+            {google && google.count > 0 && (
+              <a href={reviewsHref} className="reviews__summary" target="_blank" rel="noopener">
+                <strong>{google.rating.toFixed(1)}</strong> <span aria-hidden="true">★</span> from {google.count} Google review{google.count === 1 ? '' : 's'}
+              </a>
+            )}
           </div>
-          <div className="reviews__grid">
-            {REVIEWS.map(r => (
-              <figure key={r.name} className="review">
-                <div className="review__stars" aria-label={`${r.stars} out of 5 stars`}>{'★'.repeat(r.stars)}</div>
-                <blockquote>{r.quote}</blockquote>
-                <figcaption>{r.name} <span>· {r.area}</span></figcaption>
-              </figure>
-            ))}
-          </div>
+          {quotes.length > 0 ? (
+            <div className="reviews__grid">
+              {quotes.map(r => (
+                <figure key={r.author + r.publishTime} className="review">
+                  <div className="review__stars" aria-label={`${r.rating} out of 5 stars`}>{'★'.repeat(r.rating)}</div>
+                  <blockquote>{r.text.length > 320 ? r.text.slice(0, 300).replace(/\s+\S*$/, '') + '…' : r.text}</blockquote>
+                  <figcaption>
+                    {r.authorUrl ? <a href={r.authorUrl} target="_blank" rel="noopener nofollow">{r.author}</a> : r.author}
+                    <span> · {r.when ? `${r.when} on Google` : 'on Google'}</span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          ) : (
+            <p className="reviews__empty">See what local drivers say about us on Google.</p>
+          )}
+          <p className="reviews__more"><a href={reviewsHref} className="btn-amber reviews__cta" target="_blank" rel="noopener">Read our reviews on Google</a></p>
         </div>
       </section>
 
