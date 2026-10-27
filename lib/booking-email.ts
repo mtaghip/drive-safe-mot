@@ -165,22 +165,23 @@ export function customerConfirmation(b: Booking) {
   return { subject, text, html };
 }
 
-/** The notice the garage gets for an online booking. */
-export function garageNotice(b: Booking) {
+/** The notice the garage gets for each booking: made online, or by staff (`addedBy`) for a phone booking. */
+export function garageNotice(b: Booking, addedBy?: string) {
+  const kind = addedBy ? 'New phone booking' : 'New online booking';
   const service = serviceById(b.service)!;
   const reg = formatReg(b.reg);
   const day = fmtLong(b.date);
   const time = `${fmtHour(b.hour)} – ${fmtHour(b.hour + 1)}`;
   const admin = `${siteUrl()}/admin?date=${b.date}`;
-  const subject = `New online booking: ${reg}, ${service.name}, ${day} ${fmtHour(b.hour)} (${b.ref})`;
+  const subject = `${kind}: ${reg}, ${service.name}, ${day} ${fmtHour(b.hour)} (${b.ref})`;
   const fields: [string, string][] = [
     ['Reference', b.ref], ['Service', service.name], ['Date', day], ['Time', time], ['Vehicle', reg],
     ['Customer', b.name], ['Phone', b.phone], ['Email', b.email || '—'],
   ];
-  const text = ['New online booking.', '', ...fields.map(([k, v]) => `${(k + ':').padEnd(11)} ${v}`), '', `Open the diary: ${admin}`,
+  const text = [addedBy ? `${kind}, added by ${addedBy}.` : `${kind}.`, '', ...fields.map(([k, v]) => `${(k + ':').padEnd(11)} ${v}`), '', `Open the diary: ${admin}`,
     '', 'Reply to this email to write to the customer.'].join('\n');
   const html = `<div style="font-family:Arial,Helvetica,sans-serif;color:#0e1a2c;max-width:560px;margin:0 auto;padding:20px 16px;">
-  <div style="font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#a87a0c;">New online booking</div>
+  <div style="font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#a87a0c;">${kind}${addedBy ? ` · added by ${esc(addedBy)}` : ''}</div>
   <h1 style="font-size:20px;margin:6px 0 14px;">${esc(service.name)} · ${esc(day)} at ${esc(fmtHour(b.hour))}</h1>
   <table cellpadding="0" cellspacing="0" style="width:100%;border-top:1px solid #e6e9ef;font-size:14px;">
     ${fields.map(([k, v]) => `<tr><td style="padding:8px 0;border-bottom:1px solid #e6e9ef;color:#586377;width:100px;">${k}</td><td style="padding:8px 0;border-bottom:1px solid #e6e9ef;font-weight:700;">${

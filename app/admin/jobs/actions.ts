@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { audit, requireStaff } from '@/lib/auth.ts';
-import { send } from '@/lib/email.ts';
+import { garageEmail, send } from '@/lib/email.ts';
 import { gbp } from '@/lib/invoice-calc.ts';
 import { getInvoice } from '@/lib/invoices.ts';
 import { isJobStatus, statusLabel } from '@/lib/job-status.ts';
@@ -108,7 +108,7 @@ export async function emailReadyAction(_: JobState, form: FormData): Promise<Job
   const text_ = `Hi ${first},\n\nYour ${car} is ready to collect from ${COMPANY.tradingName}, ${ADDRESS_ONE_LINE}.${owed}\n\n` +
     `We're open Monday to Friday until 17:00. Any questions, call us on ${PHONE_DISPLAY}.\n\n${COMPANY.tradingName}`;
   try {
-    await send({ to: job.customerEmail, replyTo: EMAIL, subject: `Your ${job.reg || 'car'} is ready to collect`, text: text_ });
+    await send({ to: job.customerEmail, bcc: garageEmail(), replyTo: EMAIL, subject: `Your ${job.reg || 'car'} is ready to collect`, text: text_ });
   } catch (err) {
     console.error('[jobs] ready email failed', err);
     return { error: 'Couldn’t send the email. Check the email settings.' };

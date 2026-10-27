@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { audit, requireStaff } from '@/lib/auth.ts';
 import { findOrCreateCustomer, findOrCreateVehicle, getVehicle, validateCustomer } from '@/lib/customers.ts';
 import { db } from '@/lib/db.ts';
-import { send } from '@/lib/email.ts';
+import { garageEmail, send } from '@/lib/email.ts';
 import { gbp, LINE_KINDS, type Line, type LineKind } from '@/lib/invoice-calc.ts';
 import { renderInvoiceHtml, renderInvoiceText } from '@/lib/invoice-document.ts';
 import {
@@ -145,7 +145,7 @@ export async function emailInvoiceAction(_: InvoiceState, form: FormData): Promi
   if (!inv.billEmail) return { error: 'There’s no email address on this invoice.' };
   try {
     await send({
-      to: inv.billEmail, replyTo: EMAIL,
+      to: inv.billEmail, bcc: garageEmail(), replyTo: EMAIL,
       subject: `${inv.status === 'paid' ? 'Receipt' : 'Invoice'} ${inv.number} from ${COMPANY.tradingName}`,
       html: `<div style="background:#f6f4ee;padding:16px 0;">${renderInvoiceHtml(inv)}</div>`,
       text: renderInvoiceText(inv),

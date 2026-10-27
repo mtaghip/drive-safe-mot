@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     }
 
     const booking = await createBooking({ ...b, source: 'online' });
-    await sendBookingEmails(booking, { notifyGarage: true });
+    await sendBookingEmails(booking);
     return NextResponse.json({ ref: booking.ref }, { status: 201 });
   } catch (err) {
     if (err instanceof SlotTakenError) {

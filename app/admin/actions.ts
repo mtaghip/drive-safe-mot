@@ -27,7 +27,7 @@ export async function addPhoneBooking(_: FormState, form: FormData): Promise<For
   try {
     const booking = await createBooking({ ...r.value, source: 'phone' });
     await audit(me, 'Added phone booking', 'booking', null, `${booking.ref} · ${booking.reg} · ${fmtShort(booking.date)} ${fmtHour(booking.hour)}`);
-    await sendBookingEmails(booking, { notifyGarage: false });
+    await sendBookingEmails(booking, { addedBy: me.name });
   } catch (err) {
     if (err instanceof SlotTakenError) return { error: 'That slot has just been taken or blocked.' };
     throw err;

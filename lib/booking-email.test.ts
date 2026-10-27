@@ -35,3 +35,10 @@ test('calendar event is in London time', () => {
   assert.match(google, /dates=20261029T100000%2F20261029T110000/);
   assert.match(google, /ctz=Europe%2FLondon/);
 });
+
+test('garage notice says how the booking was made', () => {
+  assert.match(garageNotice(b).subject, /^New online booking: EO59 SSK, MOT test/);
+  const phone = garageNotice(b, 'Sam');
+  assert.match(phone.subject, /^New phone booking: /);
+  assert.match(phone.text, /^New phone booking, added by Sam\./);
+});
