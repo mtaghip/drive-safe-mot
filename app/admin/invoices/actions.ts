@@ -3,7 +3,8 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { audit, requireStaff } from '@/lib/auth.ts';
-import { getVehicle } from '@/lib/customers.ts';
+import { findOrCreateCustomer, findOrCreateVehicle, getVehicle, validateCustomer } from '@/lib/customers.ts';
+import { db } from '@/lib/db.ts';
 import { send } from '@/lib/email.ts';
 import { gbp, LINE_KINDS, type Line, type LineKind } from '@/lib/invoice-calc.ts';
 import { renderInvoiceHtml, renderInvoiceText } from '@/lib/invoice-document.ts';
@@ -27,6 +28,22 @@ export async function createInvoiceAction(form: FormData) {
   if (!customerId) throw new Error('No customer for this invoice.');
   const id = await createDraft({ customerId, vehicleId: form.get('vehicleId') ? num(form, 'vehicleId') : null, booking, staffId: me.id });
   await audit(me, 'Started invoice', 'invoice', id, booking ? `from booking ${booking.ref}` : '');
+  redirect(page(id));
+}
+
+/** New draft for someone not yet on the system: adds them (or reuses a match by phone or email), and their car. */
+export async function createInvoiceForNewCustomerAction(_: InvoiceState, form: FormData): Promise<InvoiceState> {
+  const me = await requireStaff('write');
+  const c = validateCustomer(Object.fromEntries([...form.entries()].map(([k, v]) => [k, String(v)])));
+  if (!c.ok) return { error: c.error };
+  const reg = String(form.get('reg') ?? '').trim();
+  const id = await db.tx(async tx => {
+    const customerId = await findOrCreateCustomer(tx, c.value);
+    if (c.value.address) await tx.query(`UPDATE customers SET address = $2 WHERE id = $1 AND address = ''`, [customerId, c.value.address]);
+    const vehicleId = reg ? await findOrCreateVehicle(tx, customerId, reg) : null;
+    return createDraft({ customerId, vehicleId, staffId: me.id, tx });
+  });
+  await audit(me, 'Started invoice', 'invoice', id, `new customer ${c.value.name}`);
   redirect(page(id));
 }
 

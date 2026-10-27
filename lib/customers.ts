@@ -84,6 +84,15 @@ export async function getCustomer(id: number, db: Db = defaultDb) {
   return { ...rows[0], vehicles };
 }
 
+/** Vehicles of several customers at once, grouped by customer. */
+export async function vehiclesFor(customerIds: number[], db: Db = defaultDb): Promise<Map<number, Vehicle[]>> {
+  const out = new Map<number, Vehicle[]>();
+  if (!customerIds.length) return out;
+  const { rows } = await db.query<Vehicle>(`SELECT ${VEHICLE_COLS} FROM vehicles v WHERE v.customer_id = ANY($1::int[]) ORDER BY v.id`, [customerIds]);
+  for (const v of rows) out.set(v.customerId, [...(out.get(v.customerId) ?? []), v]);
+  return out;
+}
+
 export async function getVehicle(id: number, db: Db = defaultDb) {
   const { rows } = await db.query<Vehicle>(`SELECT ${VEHICLE_COLS} FROM vehicles v WHERE v.id = $1`, [id]);
   return rows[0] ?? null;
