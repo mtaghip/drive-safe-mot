@@ -13,13 +13,13 @@ const base: DaySchedule = { date: '2026-10-20', closed: null, bookings: [], bloc
 
 test('lists every slot with bookings, blocks and free hours', () => {
   const m = buildDailyEmail({ ...base, bookings: [booking(9), booking(14, { service: 'dpf', source: 'phone' })], blocks: [{ id: 1, date: '2026-10-20', hour: 10, note: 'Courtesy car' }] });
-  assert.equal(m.subject, "Today's bookings · Tue 20 Oct · 2 of 8 slots booked");
+  assert.equal(m.subject, "Today's bookings · Tue 20 Oct · 2 of 9 slots booked");
   assert.match(m.text, /09:00–10:00 {2}MOT test · AB12 CDE · Sarah Miles · 07700 900123 · DS-AAAA9/);
   assert.match(m.text, /10:00–11:00 {2}Blocked: Courtesy car/);
   assert.match(m.text, /11:00–12:00 {2}Free/);
   assert.match(m.text, /14:00–15:00 {2}DPF clean .* phone booking/);
   assert.match(m.text, /Sat 24 Oct: closed \(Saturday\)/);
-  assert.match(m.html, /2 of 8 slots booked/);
+  assert.match(m.html, /2 of 9 slots booked/);
 });
 
 test('escapes customer details in the HTML version', () => {

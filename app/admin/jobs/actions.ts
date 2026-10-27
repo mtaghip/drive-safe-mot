@@ -10,7 +10,7 @@ import { isJobStatus, statusLabel } from '@/lib/job-status.ts';
 import {
   addTask, deletePhoto, getJob, invoiceForJob, jobFromBooking, logJobNote, newJob, removeTask, setJobStatus, setTaskDone, taskJob, updateJob,
 } from '@/lib/jobs.ts';
-import { ADDRESS_ONE_LINE, COMPANY, EMAIL, PHONE_DISPLAY } from '@/lib/site.ts';
+import { ADDRESS_ONE_LINE, COMPANY, EMAIL, OPEN_DAYS_TEXT, PHONE_DISPLAY } from '@/lib/site.ts';
 
 export type JobState = { error?: string; ok?: string } | undefined;
 const num = (f: FormData, k: string) => Number(f.get(k));
@@ -106,7 +106,7 @@ export async function emailReadyAction(_: JobState, form: FormData): Promise<Job
   const car = [job.vehicleDesc, job.reg && `(${job.reg})`].filter(Boolean).join(' ') || 'car';
   const first = job.customerName.trim().split(/\s+/)[0];
   const text_ = `Hi ${first},\n\nYour ${car} is ready to collect from ${COMPANY.tradingName}, ${ADDRESS_ONE_LINE}.${owed}\n\n` +
-    `We're open Monday to Friday until 17:00. Any questions, call us on ${PHONE_DISPLAY}.\n\n${COMPANY.tradingName}`;
+    `We're open ${OPEN_DAYS_TEXT}. Any questions, call us on ${PHONE_DISPLAY}.\n\n${COMPANY.tradingName}`;
   try {
     await send({ to: job.customerEmail, bcc: garageEmail(), replyTo: EMAIL, subject: `Your ${job.reg || 'car'} is ready to collect`, text: text_ });
   } catch (err) {

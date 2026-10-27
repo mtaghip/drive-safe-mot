@@ -2,7 +2,7 @@
 // Built here (no sending) so the wording and layout can be tested.
 import { formatReg } from './customers.ts';
 import { fmtHour, fmtLong, pad } from './schedule.ts';
-import { ADDRESS_LINES, ADDRESS_ONE_LINE, COMPANY, DIRECTIONS_HREF, EMAIL, PHONE_DISPLAY, PHONE_HREF, serviceById, siteUrl } from './site.ts';
+import { ADDRESS_LINES, ADDRESS_ONE_LINE, COMPANY, OPEN_DAYS_TEXT, DIRECTIONS_HREF, EMAIL, PHONE_DISPLAY, PHONE_HREF, serviceById, siteUrl } from './site.ts';
 import type { Booking } from './store.ts';
 
 const esc = (s: string) => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
@@ -90,7 +90,7 @@ export function customerConfirmation(b: Booking) {
     ...before.map(l => `- ${l}`),
     '',
     'NEED TO CHANGE OR CANCEL?',
-    `Call us on ${PHONE_DISPLAY} or reply to this email, quoting ${b.ref}. We’re open Monday to Friday, 9:00 – 17:00.`,
+    `Call us on ${PHONE_DISPLAY} or reply to this email, quoting ${b.ref}. We’re open ${OPEN_DAYS_TEXT}.`,
     '',
     'We look forward to seeing you.',
     '',
@@ -148,7 +148,7 @@ export function customerConfirmation(b: Booking) {
     <div style="background:#f6f7f9;border-radius:10px;padding:16px 18px;">
       <div style="font-size:15px;font-weight:700;margin-bottom:4px;">Need to change or cancel?</div>
       <div style="font-size:14px;line-height:1.55;color:#3a4558;">Call us on <a href="${PHONE_HREF}" style="color:#0f2340;font-weight:700;">${esc(PHONE_DISPLAY)}</a>
-        or simply reply to this email, quoting <strong>${esc(b.ref)}</strong>. We’re open Monday to Friday, 9:00 – 17:00.</div>
+        or simply reply to this email, quoting <strong>${esc(b.ref)}</strong>. We’re open ${OPEN_DAYS_TEXT}.</div>
     </div>
     <p style="font-size:15px;line-height:1.55;margin:22px 0 0;">Kind regards,<br><strong>The team at ${esc(COMPANY.tradingName)}</strong></p>
   </td></tr>

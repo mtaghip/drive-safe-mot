@@ -20,8 +20,8 @@ test('addDays crosses month and year ends', () => {
   assert.equal(addDays('2028-02-28', 1), '2028-02-29');
 });
 
-test('Sundays and Saturdays are closed', () => {
-  assert.equal(isOpenDay('2026-10-24'), false); // Saturday
+test('Sundays are closed, Saturdays open', () => {
+  assert.equal(isOpenDay('2026-10-24'), true);  // Saturday
   assert.equal(isOpenDay('2026-10-25'), false); // Sunday
   assert.equal(isOpenDay('2026-10-26'), true);  // Monday
 });
@@ -39,10 +39,10 @@ test('monthsInRange lists each month touched', () => {
 
 test('nextFreeSlot skips closed and full days', () => {
   const r = { start: '2026-10-23', end: '2026-11-19' }; // Friday
-  const full = [9, 10, 11, 12, 13, 14, 15, 16];
-  assert.deepEqual(nextFreeSlot(r, { taken: { '2026-10-23': full, '2026-10-26': [9] }, closed: [] }), { date: '2026-10-26', hour: 10 });
-  // A day closed by staff is skipped too.
-  assert.deepEqual(nextFreeSlot(r, { taken: { '2026-10-23': full }, closed: ['2026-10-26'] }), { date: '2026-10-27', hour: 9 });
+  const full = [9, 10, 11, 12, 13, 14, 15, 16, 17];
+  assert.deepEqual(nextFreeSlot(r, { taken: { '2026-10-23': full, '2026-10-24': [9] }, closed: [] }), { date: '2026-10-24', hour: 10 });
+  // A day closed by staff is skipped too, and so is Sunday.
+  assert.deepEqual(nextFreeSlot(r, { taken: { '2026-10-23': full }, closed: ['2026-10-24'] }), { date: '2026-10-26', hour: 9 });
 });
 
 const now = new Date('2026-10-19T10:00:00Z');
@@ -56,7 +56,7 @@ test('valid booking is normalised', () => {
 });
 
 test('rejects today, closed days, out-of-range days and bad hours', () => {
-  for (const patch of [{ date: '2026-10-19' }, { date: '2026-10-25' }, { date: '2026-11-17' }, { hour: 17 }, { hour: '9' }]) {
+  for (const patch of [{ date: '2026-10-19' }, { date: '2026-10-25' }, { date: '2026-11-17' }, { hour: 18 }, { hour: '9' }]) {
     const r = validateBooking({ ...good, ...patch }, now);
     assert.ok(!r.ok && r.errors.when, JSON.stringify(patch));
   }
@@ -83,7 +83,7 @@ test('bank holidays are closed and labelled', () => {
   assert.equal(isOpenDay('2026-12-25'), false);
   assert.equal(isOpenDay('2026-12-28'), false);
   assert.equal(closedReason('2026-12-28', []), 'Holiday');
-  assert.equal(closedReason('2026-12-26', []), 'Closed'); // Saturday
+  assert.equal(closedReason('2026-12-27', []), 'Closed'); // Sunday
   assert.equal(closedReason('2026-12-29', ['2026-12-29']), 'Closed');
   assert.equal(closedReason('2026-12-29', []), null);
 });

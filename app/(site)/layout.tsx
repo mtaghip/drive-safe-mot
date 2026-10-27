@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import BottomBar from '@/components/BottomBar.tsx';
 import Header from '@/components/Header.tsx';
-import { ADDRESS_ONE_LINE, COMPANY, EMAIL, NAV, PHONE_DISPLAY, PHONE_HREF, siteUrl } from '@/lib/site.ts';
+import { ADDRESS_ONE_LINE, BOOKING, COMPANY, EMAIL, NAV, PHONE_DISPLAY, PHONE_HREF, siteUrl } from '@/lib/site.ts';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -13,7 +13,8 @@ const jsonLd = {
   email: EMAIL,
   priceRange: '££',
   address: { '@type': 'PostalAddress', streetAddress: '21 Taylor St', addressLocality: 'Luton', postalCode: 'LU2 0EY', addressCountry: 'GB' },
-  openingHoursSpecification: [{ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '09:00', closes: '17:00' }],
+  openingHoursSpecification: [{ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', ...(BOOKING.openSaturday ? ['Saturday'] : [])],
+    opens: `${String(BOOKING.hours[0]).padStart(2, '0')}:00`, closes: `${BOOKING.hours[BOOKING.hours.length - 1] + 1}:00` }],
 };
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {

@@ -45,9 +45,9 @@ export const NAV = [
 export const BOOKING = {
   /** How far ahead customers can book, counted from tomorrow. */
   weeks: 4,
-  /** Start hours of the one-hour slots: 9:00–10:00 … 16:00–17:00. */
-  hours: [9, 10, 11, 12, 13, 14, 15, 16],
-  openSaturday: false,
+  /** Start hours of the one-hour slots: 9:00–10:00 … 17:00–18:00. */
+  hours: [9, 10, 11, 12, 13, 14, 15, 16, 17],
+  openSaturday: true,
   /** England and Wales bank holidays, worked out automatically. */
   closedOnBankHolidays: true,
   timeZone: 'Europe/London',
@@ -63,9 +63,16 @@ export const BOOKING = {
  */
 export const DAILY_EMAIL_HOUR = 8;
 
+const OPEN = `${BOOKING.hours[0]}:00 – ${BOOKING.hours[BOOKING.hours.length - 1] + 1}:00`;
+/** For sentences: "Monday to Saturday, 9:00 – 18:00". */
+export const OPEN_DAYS_TEXT = `Monday to ${BOOKING.openSaturday ? 'Saturday' : 'Friday'}, ${OPEN}`;
+/** For sentences: "9am to 6pm". */
+export const SLOT_RANGE_TEXT = `${BOOKING.hours[0]}am to ${BOOKING.hours[BOOKING.hours.length - 1] + 1 - 12}pm`;
+
 export const OPENING_HOURS = [
-  { d: 'Monday – Friday', t: '9:00 – 17:00' },
-  { d: 'Saturday', t: BOOKING.openSaturday ? '9:00 – 17:00' : 'Closed' },
+  ...(BOOKING.openSaturday
+    ? [{ d: 'Monday – Saturday', t: OPEN }]
+    : [{ d: 'Monday – Friday', t: OPEN }, { d: 'Saturday', t: 'Closed' }]),
   { d: 'Sunday', t: 'Closed' },
   ...(BOOKING.closedOnBankHolidays ? [{ d: 'Bank holidays', t: 'Closed' }] : []),
 ];

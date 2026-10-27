@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import BookingForm from '@/components/BookingForm.tsx';
-import { serviceById } from '@/lib/site.ts';
+import { serviceById, SLOT_RANGE_TEXT } from '@/lib/site.ts';
 
 export const metadata: Metadata = {
   title: 'Book your MOT',
@@ -15,7 +15,7 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
         <div className="wrap book-hero__inner">
           <div className="eyebrow">Online booking</div>
           <h1 className="display">Book your slot</h1>
-          <p>Choose a one-hour slot between 9am and 5pm, from tomorrow onwards.</p>
+          <p>Choose a one-hour slot, {SLOT_RANGE_TEXT}, from tomorrow onwards.</p>
         </div>
       </section>
       <BookingForm key={service} initialService={serviceById(service ?? '')?.id ?? 'mot'} />

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Tick } from '@/components/icons.tsx';
 import { Hours, MapEmbed } from '@/components/shared.tsx';
 import { bookingRange, fmtHour, fmtShort, nextFreeSlot } from '@/lib/schedule.ts';
-import { ADDRESS_LINES, PHONE_DISPLAY, PHONE_HREF, REVIEWS, SERVICES } from '@/lib/site.ts';
+import { ADDRESS_LINES, PHONE_DISPLAY, PHONE_HREF, REVIEWS, SERVICES, SLOT_RANGE_TEXT } from '@/lib/site.ts';
 import { availability } from '@/lib/store.ts';
 import garageFront from '@/public/images/garage-front.webp';
 
@@ -23,7 +23,7 @@ async function nextSlotLabel() {
 const TRUST = [
   { title: 'Prices shown up front', text: '£45 MOT, no surprises at the counter.' },
   { title: 'Explained in plain English', text: 'We talk you through results and advisories.' },
-  { title: 'Book in under a minute', text: 'One-hour slots, 9am to 5pm, from tomorrow.' },
+  { title: 'Book in under a minute', text: `One-hour slots, ${SLOT_RANGE_TEXT}, from tomorrow.` },
 ];
 
 export default async function HomePage() {
