@@ -214,6 +214,12 @@ CREATE TABLE IF NOT EXISTS reminder_sends (
   UNIQUE (vehicle_id, kind, due_date)
 );
 
+-- Emails received at the garage's domain and forwarded on, so a webhook retry doesn't send one twice.
+CREATE TABLE IF NOT EXISTS inbound_forwards (
+  email_id     text PRIMARY KEY,
+  forwarded_at timestamptz NOT NULL DEFAULT now()
+);
+
 -- Who did what in the staff pages.
 CREATE TABLE IF NOT EXISTS audit_log (
   id         serial PRIMARY KEY,

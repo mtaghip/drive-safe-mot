@@ -26,6 +26,8 @@ Without `DATABASE_URL`, development uses PGlite, an embedded Postgres that keeps
 | `DVLA_VES_API_KEY` | Optional. Enables the **Look up** button that fills in a vehicle's make, colour, year and MOT expiry from its registration. Free from [DVLA](https://register-for-ves.driver-vehicle-licensing.api.gov.uk/). |
 | `GOOGLE_PLACES_API_KEY` | Optional. Shows the Google rating and recent 4–5★ reviews on the home page (refreshed twice a day). Google Cloud → enable **Places API (New)** → create an API key restricted to it. Without it the home page links to the reviews on Google. |
 | `GOOGLE_PLACE_ID` | Optional. Only needed if the listing isn't found automatically by name and postcode. |
+| `RESEND_WEBHOOK_SECRET` | Optional. Forwards mail sent to the site's domain (e.g. bookings@drivesafemot.co.uk) to the garage inbox. In Resend: turn on **Receiving** for the domain (add its MX record), then add a webhook to `https://www.drivesafemot.co.uk/api/inbound-email` for `email.received` and put its signing secret here. Replies from the inbox go back to the sender. |
+| `INBOUND_FORWARD_TO` | Optional. Where received mail is forwarded; defaults to `GARAGE_EMAIL`, or the garage email in `lib/site.ts`. |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` | [Cloudflare Turnstile](https://dash.cloudflare.com/?to=/:account/turnstile) spam check on the booking form (free). Usually invisible to customers. The site key is baked in at build time. Leave both empty to turn it off. |
 | `DATABASE_URL` | Postgres connection string. All tables are created and kept up to date automatically on startup. |
 | `RESEND_API_KEY` | [Resend](https://resend.com) key for confirmation emails. |
