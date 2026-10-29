@@ -2,24 +2,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Tick } from '@/components/icons.tsx';
 import { Hours, MapEmbed } from '@/components/shared.tsx';
-import { bookingRange, fmtHour, fmtShort, nextFreeSlot } from '@/lib/schedule.ts';
+import { nextSlotLabel } from '@/lib/next-slot.ts';
 import { googleReviews, quotable } from '@/lib/google-reviews.ts';
 import { ADDRESS_LINES, PHONE_DISPLAY, PHONE_HREF, REVIEWS_URL, SERVICES, SLOT_RANGE_TEXT } from '@/lib/site.ts';
-import { availability } from '@/lib/store.ts';
 import garageFront from '@/public/images/garage-front.webp';
 
 export const dynamic = 'force-dynamic';
-
-async function nextSlotLabel() {
-  try {
-    const range = bookingRange();
-    const slot = nextFreeSlot(range, await availability(range.start, range.end));
-    return slot ? `${fmtShort(slot.date)}, ${fmtHour(slot.hour)}` : 'Call us to check';
-  } catch (err) {
-    console.error('[home] could not load availability', err);
-    return 'Call us to check';
-  }
-}
 
 const TRUST = [
   { title: 'Prices shown up front', text: '£45 MOT, no surprises at the counter.' },
@@ -72,7 +60,10 @@ export default async function HomePage() {
       <section className="wrap section">
         <div className="section-head">
           <h2 className="h2">What we do</h2>
-          <Link href="/services" className="section-head__link">All services and prices →</Link>
+          <span className="section-head__links">
+            <Link href="/book-mot-luton" className="section-head__link">MOTs in Luton →</Link>
+            <Link href="/services" className="section-head__link">All services and prices →</Link>
+          </span>
         </div>
         <div className="svc-list">
           {SERVICES.map((s, i) => (

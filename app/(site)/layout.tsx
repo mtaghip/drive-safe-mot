@@ -32,6 +32,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
           </div>
           <nav className="site-footer__nav" aria-label="Footer">
             {NAV.map(n => <Link key={n.href} href={n.href}>{n.label}</Link>)}
+            <Link href="/book-mot-luton">Book an MOT in Luton</Link>
             <Link href="/privacy">Privacy</Link>
           </nav>
         </div>
