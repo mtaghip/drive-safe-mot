@@ -2,6 +2,8 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { after } from 'next/server';
+import { syncBookingVehicle } from '@/lib/mot-sync.ts';
 import { audit, requireStaff } from '@/lib/auth.ts';
 import { buildDailyEmail, dailyEmailTo, loadDaySchedule } from '@/lib/daily-email.ts';
 import { send, sendBookingEmails } from '@/lib/email.ts';
@@ -28,6 +30,7 @@ export async function addPhoneBooking(_: FormState, form: FormData): Promise<For
     const booking = await createBooking({ ...r.value, source: 'phone' });
     await audit(me, 'Added phone booking', 'booking', null, `${booking.ref} · ${booking.reg} · ${fmtShort(booking.date)} ${fmtHour(booking.hour)}`);
     await sendBookingEmails(booking, { addedBy: me.name });
+    after(() => syncBookingVehicle(booking.ref));
   } catch (err) {
     if (err instanceof SlotTakenError) return { error: 'That slot has just been taken or blocked.' };
     throw err;

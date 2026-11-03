@@ -66,7 +66,7 @@ export default async function CustomerPage({ params, searchParams }: { params: P
                 <span>{[v.year, v.make, v.model, v.colour && `(${v.colour.toLowerCase()})`].filter(Boolean).join(' ') || <span className="adm-muted">No details yet</span>}</span>
               </div>
               <div className="adm-slot__meta">
-                <span>MOT due {due(v.motDue, today)}</span>
+                <span>MOT due {due(v.motDue, today)}{v.dvlaNote && <span className="adm-muted"> · {v.dvlaNote}</span>}</span>
                 <span>Service due {due(v.serviceDue, today)}</span>
                 {v.notes && <span>{v.notes}</span>}
               </div>

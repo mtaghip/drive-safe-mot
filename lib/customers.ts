@@ -9,14 +9,16 @@ export type Customer = {
 export type Vehicle = {
   id: number; customerId: number; reg: string; make: string; model: string; colour: string;
   year: number | null; motDue: string | null; serviceDue: string | null; notes: string;
+  /** What DVLA said on the last automatic check, when worth showing. */
+  dvlaNote?: string;
 };
 export type CustomerInput = { name: string; phone: string; email: string; address: string; notes: string };
-export type VehicleInput = Omit<Vehicle, 'id' | 'customerId'>;
+export type VehicleInput = Omit<Vehicle, 'id' | 'customerId' | 'dvlaNote'>;
 
 export const CUSTOMER_COLS = `c.id, c.name, c.phone, c.email, c.address, c.notes, c.reminders_ok AS "remindersOk",
   to_char(c.created_at, 'YYYY-MM-DD') AS "createdAt"`;
 export const VEHICLE_COLS = `v.id, v.customer_id AS "customerId", v.reg, v.make, v.model, v.colour, v.year,
-  to_char(v.mot_due, 'YYYY-MM-DD') AS "motDue", to_char(v.service_due, 'YYYY-MM-DD') AS "serviceDue", v.notes`;
+  to_char(v.mot_due, 'YYYY-MM-DD') AS "motDue", to_char(v.service_due, 'YYYY-MM-DD') AS "serviceDue", v.notes, v.dvla_note AS "dvlaNote"`;
 
 /** Registration without spaces, for matching "AB12CDE" to "AB12 CDE". */
 export const compactReg = (reg: string) => normaliseReg(reg).replace(/ /g, '');

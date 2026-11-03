@@ -1,5 +1,9 @@
 import Link from 'next/link';
 import { requireStaff } from '@/lib/auth.ts';
+import { motDateStats } from '@/lib/mot-sync.ts';
+import { can } from '@/lib/roles.ts';
+import { lookupConfigured } from '@/lib/vehicle-lookup.ts';
+import CheckButton from './CheckButton.tsx';
 import { firstReminderDay } from '@/lib/reminder-rules.ts';
 import { recentSends, upcomingDue, type UpcomingDue } from '@/lib/reminders.ts';
 import { addDays, fmtShort, todayIso } from '@/lib/schedule.ts';
@@ -37,19 +41,41 @@ function Table({ rows, today, empty }: { rows: UpcomingDue[]; today: string; emp
 }
 
 export default async function RemindersPage() {
-  await requireStaff();
+  const me = await requireStaff();
   const today = todayIso();
-  const [upcoming, overdue, sends] = await Promise.all([
-    upcomingDue(today, addDays(today, 45)), upcomingDue(addDays(today, -60), addDays(today, -1)), recentSends(30),
+  const [upcoming, overdue, sends, stats] = await Promise.all([
+    upcomingDue(today, addDays(today, 45)), upcomingDue(addDays(today, -60), addDays(today, -1)), recentSends(30), motDateStats(),
   ]);
+  const dvla = lookupConfigured();
   return (
     <div className="wrap page-body adm-page">
       <h1 className="adm-h1">Reminders</h1>
       <p className="adm-muted" style={{ margin: 0, maxWidth: 760 }}>
         Each morning, customers are emailed about 30 and 7 days before their MOT runs out, and 14 days before a service is due,
-        with a link to book. MOT dates come from the vehicle record: set them on the customer’s page, look them up from DVLA, or
-        enter the new expiry on the MOT invoice. Customers without an email, or who opted out, are listed here to call.
+        with a link to book. Customers without an email, or who opted out, are listed here to call.
       </p>
+
+      <section className="card">
+        <h2 className="adm-h2">MOT dates</h2>
+        <p style={{ margin: '6px 0 0' }}>
+          <strong>{stats.withDate}</strong> of {stats.total} vehicle{stats.total === 1 ? '' : 's'} have an MOT date, so they get reminders.
+        </p>
+        {dvla ? (
+          <>
+            <p className="adm-muted" style={{ margin: '6px 0 0', maxWidth: 760 }}>
+              Dates come from DVLA automatically: when a car is booked in, and each morning for cars without a date or close to their MOT
+              (so a new test, here or elsewhere, moves the date on before a reminder goes out).
+              {stats.lastCheck ? ` Last check ${stats.lastCheck}.` : ''} {stats.toCheck ? `${stats.toCheck} waiting to be checked.` : 'All up to date.'}
+            </p>
+            {can(me.role, 'write') && stats.toCheck > 0 && <CheckButton />}
+          </>
+        ) : (
+          <p className="adm-muted" style={{ margin: '6px 0 0', maxWidth: 760 }}>
+            Automatic MOT dates from DVLA aren’t switched on: add a free DVLA Vehicle Enquiry Service key as <code>DVLA_VES_API_KEY</code> in Vercel.
+            Until then, dates come from the MOT invoice (“MOT passed?”) or are typed on the customer’s page.
+          </p>
+        )}
+      </section>
 
       <section className="card">
         <h2 className="adm-h2">Due in the next 45 days</h2>

@@ -96,6 +96,9 @@ CREATE TABLE IF NOT EXISTS vehicles (
 CREATE INDEX IF NOT EXISTS vehicles_reg_compact ON vehicles (replace(reg, ' ', ''));
 CREATE INDEX IF NOT EXISTS vehicles_customer ON vehicles (customer_id);
 CREATE INDEX IF NOT EXISTS vehicles_mot_due ON vehicles (mot_due);
+-- Last DVLA check of the MOT date (see lib/mot-sync.ts), and anything worth showing about it.
+ALTER TABLE vehicles ADD COLUMN IF NOT EXISTS dvla_checked_at timestamptz;
+ALTER TABLE vehicles ADD COLUMN IF NOT EXISTS dvla_note text NOT NULL DEFAULT '';
 
 ALTER TABLE bookings ADD COLUMN IF NOT EXISTS customer_id integer REFERENCES customers(id) ON DELETE SET NULL;
 ALTER TABLE bookings ADD COLUMN IF NOT EXISTS vehicle_id integer REFERENCES vehicles(id) ON DELETE SET NULL;

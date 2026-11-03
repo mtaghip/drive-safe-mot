@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { after, NextResponse } from 'next/server';
+import { syncBookingVehicle } from '@/lib/mot-sync.ts';
 import { sendBookingEmails } from '@/lib/email.ts';
 import { todayIso } from '@/lib/schedule.ts';
 import { clientIp, hashIp, verifyTurnstile } from '@/lib/security.ts';
@@ -38,6 +39,8 @@ export async function POST(req: Request) {
 
     const booking = await createBooking({ ...b, source: 'online' });
     await sendBookingEmails(booking);
+    // Make, colour and MOT date from DVLA, after the customer has their answer.
+    after(() => syncBookingVehicle(booking.ref));
     return NextResponse.json({ ref: booking.ref }, { status: 201 });
   } catch (err) {
     if (err instanceof SlotTakenError) {
