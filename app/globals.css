@@ -608,3 +608,10 @@ a.adm-jobstatus:hover { filter: brightness(.96); color: var(--ink-2); }
 .lp-directions { display: table; margin: 10px 0 0; font-weight: 700; color: var(--navy); }
 .lp-final p { margin: 14px 0 0; font-size: 18px; color: var(--on-navy); }
 .lp-final .hero__ctas { margin-top: 26px; }
+.sat-grid { margin-top: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 16px; }
+.sat-day { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+.sat-day h3 { margin: 0 0 12px; font-size: 18px; }
+.sat-day__none { margin: 0; color: var(--muted); }
+.sat-day__slots { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.sat-day__slots a { display: inline-block; padding: 9px 12px; border-radius: 8px; border: 1.5px solid var(--navy); color: var(--navy); font-weight: 700; text-decoration: none; font-variant-numeric: tabular-nums; }
+.sat-day__slots a:hover, .sat-day__slots a:focus-visible { background: var(--navy); color: #fff; }

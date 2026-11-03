@@ -17,13 +17,21 @@ type Done = { ref: string; first: string; email: string; reg: string; service: s
 const EMPTY_FORM = { name: '', phone: '', email: '', reg: '' };
 const WEEKDAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
-export default function BookingForm({ initialService }: { initialService: ServiceId }) {
+/** A day and hour to start on, e.g. from a "free Saturday slots" link. Ignored when out of range or not a slot. */
+function startingPoint(date?: string, hour?: number) {
+  const r = bookingRange();
+  if (!date || !inRange(date, r)) return { month: 0, date: null, hour: null };
+  return { month: Math.max(0, monthsInRange(r).indexOf(date.slice(0, 7) + '-01')), date, hour: hour != null && BOOKING.hours.includes(hour) ? hour : null };
+}
+
+export default function BookingForm({ initialService, initialDate, initialHour }: { initialService: ServiceId; initialDate?: string; initialHour?: number }) {
+  const start = startingPoint(initialDate, initialHour);
   const [service, setService] = useState<ServiceId>(initialService);
   const [avail, setAvail] = useState<Availability | null>(null);
   const [availError, setAvailError] = useState(false);
-  const [month, setMonth] = useState(0);
-  const [date, setDate] = useState<string | null>(null);
-  const [slot, setSlot] = useState<number | null>(null);
+  const [month, setMonth] = useState(start.month);
+  const [date, setDate] = useState<string | null>(start.date);
+  const [slot, setSlot] = useState<number | null>(start.hour);
   const [form, setForm] = useState(EMPTY_FORM);
   const [honeypot, setHoneypot] = useState('');
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -44,6 +52,12 @@ export default function BookingForm({ initialService }: { initialService: Servic
     }
   }, []);
   useEffect(() => { loadAvailability(); }, [loadAvailability]);
+  // A slot picked from a link may have gone, or its day closed, by the time availability arrives.
+  useEffect(() => {
+    if (!avail || !date) return;
+    if (closedReason(date, avail.closed)) { setDate(null); setSlot(null); }
+    else if (slot != null && avail.taken[date]?.includes(slot)) setSlot(null);
+  }, [avail]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Until availability arrives, show the calendar from the local range with every slot unconfirmed.
   const range = avail ?? bookingRange();
