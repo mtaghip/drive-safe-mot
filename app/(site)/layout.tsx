@@ -34,6 +34,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
             {NAV.map(n => <Link key={n.href} href={n.href}>{n.label}</Link>)}
             <Link href="/book-mot-luton">Book an MOT in Luton</Link>
             <Link href="/saturday-mot-luton">Saturday MOTs</Link>
+            <Link href="/dpf-cleaning-luton">DPF cleaning</Link>
             <Link href="/privacy">Privacy</Link>
           </nav>
         </div>

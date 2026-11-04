@@ -9,6 +9,12 @@ export const metadata: Metadata = {
   description: 'MOT tests from £45, DPF cleaning from £150, MOT repairs, tyre changes, servicing and tuning in Luton.',
 };
 
+/** Services with their own page. */
+const MORE: Partial<Record<string, { href: string; label: string }>> = {
+  mot: { href: '/book-mot-luton', label: 'More about MOTs in Luton' },
+  dpf: { href: '/dpf-cleaning-luton', label: 'More about DPF cleaning' },
+};
+
 export default function ServicesPage() {
   return (
     <>
@@ -31,6 +37,7 @@ export default function ServicesPage() {
                 <h2>{s.name}</h2>
               </div>
               <p className="svc-card__desc">{s.description}</p>
+              {MORE[s.id] && <p className="svc-card__more"><Link href={MORE[s.id]!.href}>{MORE[s.id]!.label} →</Link></p>}
               <ul className="ticks">{s.bullets.map(b => <li key={b}>{b}</li>)}</ul>
             </div>
             <div className="svc-card__side">

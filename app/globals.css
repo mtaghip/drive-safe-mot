@@ -615,3 +615,5 @@ a.adm-jobstatus:hover { filter: brightness(.96); color: var(--ink-2); }
 .sat-day__slots { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .sat-day__slots a { display: inline-block; padding: 9px 12px; border-radius: 8px; border: 1.5px solid var(--navy); color: var(--navy); font-weight: 700; text-decoration: none; font-variant-numeric: tabular-nums; }
 .sat-day__slots a:hover, .sat-day__slots a:focus-visible { background: var(--navy); color: #fff; }
+.price-card__from { font-size: 22px; font-stretch: 100%; font-weight: 700; letter-spacing: 0; color: var(--on-navy); margin-right: 10px; vertical-align: .9em; }
+.svc-card__more { margin: 10px 0 0; font-weight: 700; } .svc-card__more a { color: var(--navy); }
