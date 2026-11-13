@@ -36,6 +36,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
             <Link href="/saturday-mot-luton">Saturday MOTs</Link>
             <Link href="/dpf-cleaning-luton">DPF cleaning</Link>
             <Link href="/how-to-prepare-for-your-mot">MOT checklist</Link>
+            <Link href="/car-battery-cold-weather">Winter battery tips</Link>
             <Link href="/privacy">Privacy</Link>
           </nav>
         </div>
