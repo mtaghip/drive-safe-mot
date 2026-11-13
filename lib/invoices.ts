@@ -75,7 +75,7 @@ const vehicleDescription = (v: { make: string; model: string; colour: string; ye
 /** A line for a booked service: MOT and DPF at their fixed prices, anything else to be priced. */
 function bookingLine(service: string): Line {
   const s = serviceById(service);
-  const kind: LineKind = service === 'mot' ? 'mot' : service === 'tyres' ? 'part' : 'labour';
+  const kind: LineKind = service === 'mot' ? 'mot' : service === 'tyres' || service === 'battery' ? 'part' : 'labour';
   const fixed: Record<string, number> = { mot: 4500, dpf: 15000 };
   return { kind, description: s?.name ?? service, quantity: 1, unitPence: fixed[service] ?? 0, vatRate: defaultVatRate(kind) };
 }

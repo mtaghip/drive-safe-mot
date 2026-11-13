@@ -3,10 +3,11 @@ import Link from 'next/link';
 import { PHONE_DISPLAY, PHONE_HREF, siteUrl } from '@/lib/site.ts';
 
 const PATH = '/car-battery-cold-weather';
+const BOOK = '/book?service=battery';
 
 export const metadata: Metadata = {
   title: { absolute: 'Why Car Batteries Die in Cold Weather (and How to Prevent It) | Drive Safe MOT' },
-  description: 'Why car batteries struggle in winter, the warning signs of a weak battery, and simple ways to stop yours going flat. Plus what to do if your car won’t start on a cold morning.',
+  description: 'Why car batteries struggle in winter, the warning signs of a weak battery, and simple ways to stop yours going flat. Battery checks and replacement in Luton, priced by vehicle.',
   alternates: { canonical: PATH },
 };
 
@@ -43,10 +44,11 @@ const JUMP = [
   { title: 'Don’t keep cranking', text: 'Try for a few seconds at a time, waiting around 30 seconds between attempts. Turn off the lights, heater and radio first.' },
   { title: 'Jump start it safely', text: 'Follow your car’s handbook: many modern cars have specific jump points under the bonnet. If you’re not sure, call a breakdown service.' },
   { title: 'Drive for at least 30 minutes', text: 'Once it starts, a longer drive helps put charge back. A short trip and switching off again can leave you stuck.' },
-  { title: 'Get it checked', text: 'A battery that’s gone flat once in the cold is likely to do it again. Find out whether it’s the battery or the charging system.' },
+  { title: 'Get it checked', text: 'A battery that’s gone flat once in the cold is likely to do it again. Book a battery check and we’ll tell you whether it needs replacing.' },
 ];
 
 const FAQS = [
+  { q: 'Can you test and replace my car battery in Luton?', a: 'Yes. We test the battery and, if it needs replacing, fit the right type for your car, including AGM and EFB batteries for stop-start. The price depends on the car, and we tell you it before we fit anything. Book a battery check online or call us.' },
   { q: 'Why does my car battery die in cold weather?', a: 'Cold slows the chemical reaction inside the battery, so it has less power to give, while thick, cold engine oil makes the engine harder to turn. Add winter electrics like the heater and lights, and short journeys that don’t recharge it, and a weak battery can fail on a cold morning.' },
   { q: 'How long does a car battery last?', a: 'Typically around four to five years, depending on how the car is used. Lots of short journeys, long spells parked and heavy electrical use can shorten that.' },
   { q: 'Will a car battery recharge by idling?', a: 'Only slowly. Idling with the heater and lights on may barely keep up with what they use. A proper drive of around 30 minutes recharges the battery far better.' },
@@ -87,8 +89,8 @@ export default function CarBatteryColdWeatherPage() {
               and simple ways to stop yours going flat.
             </p>
             <div className="hero__ctas">
-              <a href="#prevent" className="btn-amber hero__cta">How to prevent it</a>
-              <a href={PHONE_HREF} className="hero__call">Call {PHONE_DISPLAY}</a>
+              <Link href={BOOK} className="btn-amber hero__cta">Book a battery check</Link>
+              <a href="#prevent" className="hero__call">How to prevent it</a>
             </div>
           </div>
           <div className="price-card bat-card">
@@ -149,18 +151,20 @@ export default function CarBatteryColdWeatherPage() {
 
       <section className="wrap section--96 prep-help">
         <div>
-          <h2 className="h2">Worried about your battery?</h2>
+          <h2 className="h2">Battery checks and replacement in Luton</h2>
           <p className="lp-lede">
-            If your car is slow to start, has needed a jump, or the battery warning light has come on, give us a ring and we’ll talk it through.
-            A regular service is also a good time to spot problems before winter does.
+            Slow to start, needed a jump, or the battery warning light is on? Book a battery check. We test the battery and tell you whether it
+            needs replacing. If it does, we fit the right type for your car, including AGM and EFB batteries for stop-start, and give you the
+            price before we fit it. Prices depend on the car.
           </p>
-          <p className="lp-lede">
-            <Link href="/book?service=service">Book a service</Link> · <Link href="/how-to-prepare-for-your-mot">Pre-MOT checklist</Link> · <Link href="/book-mot-luton">Book an MOT in Luton</Link>
+          <p style={{ marginTop: 22 }}><Link href={BOOK} className="btn-amber lp-cta">Book a battery check</Link></p>
+          <p className="lp-lede" style={{ fontSize: 16 }}>
+            <Link href="/how-to-prepare-for-your-mot">Pre-MOT checklist</Link> · <Link href="/book-mot-luton">Book an MOT in Luton</Link>
           </p>
         </div>
         <div className="prep-help__card">
-          <strong>Talk to us</strong>
-          <span>Drive Safe MOT Centre, Taylor Street, Luton.</span>
+          <strong>Won’t start at all?</strong>
+          <span>Give us a ring and we’ll talk you through your options.</span>
           <a href={PHONE_HREF} className="find-us__phone">{PHONE_DISPLAY}</a>
         </div>
       </section>

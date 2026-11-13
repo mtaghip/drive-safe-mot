@@ -5,7 +5,7 @@ import './globals.css';
 
 const archivo = Archivo({ subsets: ['latin'], axes: ['wdth'], variable: '--font-archivo', display: 'swap' });
 
-const description = 'Friendly, local MOT testing, DPF cleaning, MOT repairs, tyres, servicing and tuning on Taylor Street, Luton. £45 MOT. Book a one-hour slot online or call 01582 729943.';
+const description = 'Friendly, local MOT testing, DPF cleaning, MOT repairs, tyres, servicing, batteries and tuning on Taylor Street, Luton. £45 MOT. Book a one-hour slot online or call 01582 729943.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),

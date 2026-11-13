@@ -6,13 +6,14 @@ import tyreChange from '@/public/images/tyre-change.webp';
 
 export const metadata: Metadata = {
   title: 'Services and prices',
-  description: 'MOT tests from £45, DPF cleaning from £150, MOT repairs, tyre changes, servicing and tuning in Luton.',
+  description: 'MOT tests from £45, DPF cleaning from £150, MOT repairs, tyre changes, servicing, battery checks and replacement, and tuning in Luton.',
 };
 
 /** Services with their own page. */
 const MORE: Partial<Record<string, { href: string; label: string }>> = {
   mot: { href: '/book-mot-luton', label: 'More about MOTs in Luton' },
   dpf: { href: '/dpf-cleaning-luton', label: 'More about DPF cleaning' },
+  battery: { href: '/car-battery-cold-weather', label: 'Why batteries fail in winter' },
 };
 
 export default function ServicesPage() {

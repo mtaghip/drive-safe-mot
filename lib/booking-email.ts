@@ -20,6 +20,7 @@ const PRICE_NOTE: Record<string, string> = {
   repair: 'Quoted after inspection, before any work',
   tyres: 'Priced by tyre size, confirmed before fitting',
   service: 'Priced by vehicle, confirmed before we start',
+  battery: 'Priced by vehicle, confirmed before we fit',
   tuning: 'Priced by vehicle, confirmed before we start',
 };
 

@@ -77,7 +77,7 @@ export const OPENING_HOURS = [
   ...(BOOKING.closedOnBankHolidays ? [{ d: 'Bank holidays', t: 'Closed' }] : []),
 ];
 
-export type ServiceId = 'mot' | 'dpf' | 'repair' | 'tyres' | 'service' | 'tuning';
+export type ServiceId = 'mot' | 'dpf' | 'repair' | 'tyres' | 'service' | 'battery' | 'tuning';
 
 export type Service = {
   id: ServiceId;
@@ -144,6 +144,15 @@ export const SERVICES: Service[] = [
     description: 'Regular servicing keeps your car reliable and helps it through its next MOT. We offer interim and full services, with an oil change, new filters and a full safety check.',
     bullets: ['Interim and full services', 'Oil and filter change', 'Fluids, brakes and lights checked'],
     price: 'Call', priceNote: 'Priced by vehicle', priceIsWord: true, cta: 'Book a service',
+    bookingNote: 'Priced by vehicle', summaryPrice: 'Call',
+  },
+  {
+    id: 'battery', name: 'Battery check and replacement',
+    summary: 'Slow to start or needed a jump? We test your battery and fit the right replacement if it needs one.',
+    homePrice: 'Call', homePriceNote: 'priced by vehicle',
+    description: 'If your car is slow to start, has needed a jump, or the battery warning light is on, we test the battery and tell you whether it needs replacing. If it does, we fit the right type for your car, including AGM and EFB batteries for stop-start, and give you the price first.',
+    bullets: ['Battery test', 'Right battery for your car, stop-start included', 'Priced before we fit'],
+    price: 'Call', priceNote: 'Priced by vehicle', priceIsWord: true, cta: 'Book a battery check',
     bookingNote: 'Priced by vehicle', summaryPrice: 'Call',
   },
   {
