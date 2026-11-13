@@ -105,7 +105,7 @@ export default async function BookMotLutonPage() {
           ))}
         </ol>
         <p style={{ marginTop: 28 }}><Link href={BOOK} className="btn-amber lp-cta">See free MOT slots</Link></p>
-        <p className="lp-lede" style={{ fontSize: 16 }}>Need a weekend? <Link href="/saturday-mot-luton">See free Saturday MOT slots</Link>.</p>
+        <p className="lp-lede" style={{ fontSize: 16 }}>Need a weekend? <Link href="/saturday-mot-luton">See free Saturday MOT slots</Link>. Getting ready? <Link href="/how-to-prepare-for-your-mot">Use our pre-MOT checklist</Link>.</p>
       </section>
 
       <section className="trust">

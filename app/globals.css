@@ -617,3 +617,18 @@ a.adm-jobstatus:hover { filter: brightness(.96); color: var(--ink-2); }
 .sat-day__slots a:hover, .sat-day__slots a:focus-visible { background: var(--navy); color: #fff; }
 .price-card__from { font-size: 22px; font-stretch: 100%; font-weight: 700; letter-spacing: 0; color: var(--on-navy); margin-right: 10px; vertical-align: .9em; }
 .svc-card__more { margin: 10px 0 0; font-weight: 700; } .svc-card__more a { color: var(--navy); }
+.prep-groups { margin-top: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 20px; align-items: start; }
+.prep-group { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 22px 10px; }
+.prep-group h3 { margin: 0 0 8px; font-size: 19px; }
+.prep-group ul { list-style: none; margin: 0; padding: 0; }
+.prep-group li { border-top: 1px solid var(--line); }
+.prep-group li:first-child { border-top: 0; }
+.prep-group label { display: flex; gap: 12px; padding: 12px 0; cursor: pointer; font-size: 16px; line-height: 1.45; }
+.prep-group input { flex: none; width: 20px; height: 20px; margin-top: 2px; accent-color: var(--navy); }
+.prep-group input:checked + span strong { text-decoration: line-through; color: var(--muted); }
+.prep-why { display: block; margin-top: 2px; font-size: 14.5px; color: var(--muted); }
+.prep-help { display: flex; flex-wrap: wrap; gap: 28px 56px; align-items: center; }
+.prep-help > div { flex: 1 1 420px; min-width: 0; }
+.prep-help__card { flex: 0 1 320px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 4px; }
+.prep-help__card strong { font-size: 18px; }
+.prep-help__card .find-us__phone { margin-top: 8px; }
