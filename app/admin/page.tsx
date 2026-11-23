@@ -154,7 +154,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
       <section className="card adm-closures">
         <h2 className="adm-h2">Upcoming closed days</h2>
-        <p className="adm-muted" style={{ margin: '6px 0 0' }}>Sundays{BOOKING.openSaturday ? '' : ', Saturdays'}{BOOKING.closedOnBankHolidays ? ' and bank holidays' : ''} are closed automatically.</p>
+        <p className="adm-muted" style={{ margin: '6px 0 0' }}>Sundays{BOOKING.openSaturday ? '' : ', Saturdays'}{BOOKING.closedOnBankHolidays ? ' and bank holidays' : ''} are closed automatically.{BOOKING.closedOnBankHolidays ? '' : ' Bank holidays are open as normal: close any you want off (such as Christmas Day) below.'}</p>
         {upcomingClosures.length === 0 ? <p className="adm-muted">None.</p> : (
           <ul>
             {upcomingClosures.map(c => (

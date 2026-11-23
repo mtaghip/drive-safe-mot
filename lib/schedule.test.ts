@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { addDays, bankHolidays, bookingRange, closedReason, isIsoDate, isOpenDay, monthsInRange, nextFreeSlot, todayIso } from './schedule.ts';
+import { addDays, bankHolidays, bookingRange, closedReason, isBankHoliday, isIsoDate, isOpenDay, monthsInRange, nextFreeSlot, todayIso } from './schedule.ts';
 import { validateBooking, validatePhoneBooking } from './validation.ts';
 
 test('today uses UK time, not UTC', () => {
@@ -79,18 +79,18 @@ test('bank holidays match the published dates, including weekend substitutes', (
   for (const [y, days] of Object.entries(PUBLISHED)) assert.deepEqual([...bankHolidays(Number(y))].sort(), days, y);
 });
 
-test('bank holidays are closed and labelled', () => {
-  assert.equal(isOpenDay('2026-12-25'), false);
-  assert.equal(isOpenDay('2026-12-28'), false);
-  assert.equal(closedReason('2026-12-28', []), 'Holiday');
+test('bank holidays are open as normal, but staff can still close one', () => {
+  assert.ok(isBankHoliday('2026-12-28')); // Boxing Day substitute, still recognised
+  assert.equal(isOpenDay('2026-12-25'), true); // Christmas Day, a Friday
+  assert.equal(isOpenDay('2026-12-28'), true);
+  assert.equal(closedReason('2026-12-28', []), null);
+  assert.equal(closedReason('2026-12-25', ['2026-12-25']), 'Closed'); // closed by hand
   assert.equal(closedReason('2026-12-27', []), 'Closed'); // Sunday
-  assert.equal(closedReason('2026-12-29', ['2026-12-29']), 'Closed');
-  assert.equal(closedReason('2026-12-29', []), null);
 });
 
-test('online booking refuses a bank holiday', () => {
+test('online booking accepts a bank holiday', () => {
   const r = validateBooking({ ...good, date: '2026-12-28' }, new Date('2026-12-10T10:00:00Z'));
-  assert.ok(!r.ok && r.errors.when);
+  assert.ok(r.ok);
 });
 
 test('phone bookings allow today, beyond 4 weeks, and no email', () => {

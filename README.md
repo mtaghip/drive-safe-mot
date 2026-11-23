@@ -40,7 +40,7 @@ Resend can only send **from** a domain you own and have verified, so `BOOKING_FR
 ## How booking works
 
 - Slots are 9:00–18:00 in one-hour blocks, Monday–Saturday, from tomorrow for 4 weeks (UK time). Change these in `BOOKING` in `lib/site.ts`. Saturday opening is a single flag there; the hours shown on the site, in emails and to Google follow these settings.
-- England and Wales bank holidays are closed automatically, including substitute days (e.g. Monday 28 Dec 2026 for Boxing Day). They're worked out from the date rules, so there's no list to keep up to date. One-off holidays like a coronation need closing by hand on the staff page.
+- Bank holidays are open as normal (`closedOnBankHolidays: false` in `lib/site.ts`). Set it to `true` to close England and Wales bank holidays automatically, including substitute days (e.g. Monday 28 Dec 2026 for Boxing Day); they're worked out from the date rules, so there's no list to keep up to date. Close individual days, such as Christmas Day, on the staff page.
 - One booking per slot. The database enforces it, so two people can't take the same slot; the loser is told and the calendar refreshes.
 - The home page's "Next free slot" reads live availability.
 

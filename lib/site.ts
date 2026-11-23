@@ -48,8 +48,8 @@ export const BOOKING = {
   /** Start hours of the one-hour slots: 9:00–10:00 … 17:00–18:00. */
   hours: [9, 10, 11, 12, 13, 14, 15, 16, 17],
   openSaturday: true,
-  /** England and Wales bank holidays, worked out automatically. */
-  closedOnBankHolidays: true,
+  /** Closed on England and Wales bank holidays (worked out automatically)? Open as normal when false. */
+  closedOnBankHolidays: false,
   timeZone: 'Europe/London',
   /** Most upcoming bookings one phone number or email can hold online. */
   maxUpcomingPerCustomer: 3,
@@ -74,7 +74,7 @@ export const OPENING_HOURS = [
     ? [{ d: 'Monday – Saturday', t: OPEN }]
     : [{ d: 'Monday – Friday', t: OPEN }, { d: 'Saturday', t: 'Closed' }]),
   { d: 'Sunday', t: 'Closed' },
-  ...(BOOKING.closedOnBankHolidays ? [{ d: 'Bank holidays', t: 'Closed' }] : []),
+  { d: 'Bank holidays', t: BOOKING.closedOnBankHolidays ? 'Closed' : OPEN },
 ];
 
 export type ServiceId = 'mot' | 'dpf' | 'repair' | 'tyres' | 'service' | 'battery' | 'tuning';

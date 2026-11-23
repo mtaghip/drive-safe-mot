@@ -15,7 +15,8 @@ const jsonLd = {
   priceRange: '££',
   address: { '@type': 'PostalAddress', streetAddress: '21 Taylor St', addressLocality: 'Luton', postalCode: 'LU2 0EY', addressCountry: 'GB' },
   openingHoursSpecification: [{ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', ...(BOOKING.openSaturday ? ['Saturday'] : [])],
-    opens: `${String(BOOKING.hours[0]).padStart(2, '0')}:00`, closes: `${BOOKING.hours[BOOKING.hours.length - 1] + 1}:00` }],
+    opens: `${String(BOOKING.hours[0]).padStart(2, '0')}:00`, closes: `${BOOKING.hours[BOOKING.hours.length - 1] + 1}:00` },
+    ...(BOOKING.closedOnBankHolidays ? [] : [{ '@type': 'OpeningHoursSpecification', dayOfWeek: 'PublicHolidays', opens: `${String(BOOKING.hours[0]).padStart(2, '0')}:00`, closes: `${BOOKING.hours[BOOKING.hours.length - 1] + 1}:00` }])],
 };
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {

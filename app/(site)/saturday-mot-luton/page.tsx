@@ -28,7 +28,7 @@ const WHY = [
 ];
 
 const FAQS = [
-  { q: 'Are you open for MOTs on Saturdays?', a: `Yes. We test every Saturday from ${OPEN}, the same as Monday to Friday. We’re closed on Sundays and bank holidays.` },
+  { q: 'Are you open for MOTs on Saturdays?', a: `Yes. We test every Saturday from ${OPEN}, the same as Monday to Friday${BOOKING.closedOnBankHolidays ? '. We’re closed on Sundays and bank holidays.' : ', and we’re open bank holidays too. We’re closed on Sundays.'}` },
   { q: 'Is a Saturday MOT more expensive?', a: 'No. Our MOT is £45, fixed price, on Saturdays and weekdays alike. That’s below the DVSA maximum of £54.85 for a car.' },
   { q: 'How far ahead can I book a Saturday MOT?', a: `Up to ${BOOKING.weeks} weeks ahead online, from tomorrow. Saturdays are popular, so it’s worth booking early if you need one.` },
   { q: 'What if this Saturday is full?', a: `Pick the next Saturday from the list above, or a weekday slot. If you’re stuck, call us on ${PHONE_DISPLAY} and we’ll do what we can.` },
