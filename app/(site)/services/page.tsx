@@ -13,6 +13,10 @@ export const metadata: Metadata = {
 const MORE: Partial<Record<string, { href: string; label: string }>> = {
   mot: { href: '/book-mot-luton', label: 'More about MOTs in Luton' },
   dpf: { href: '/dpf-cleaning-luton', label: 'More about DPF cleaning' },
+  repair: { href: '/mot-repairs-luton', label: 'Failed your MOT? Read more' },
+  tyres: { href: '/tyres-luton', label: 'More about tyres' },
+  service: { href: '/car-service-luton', label: 'More about car servicing' },
+  tuning: { href: '/ecu-remapping-luton', label: 'More about ECU remapping' },
   battery: { href: '/car-battery-cold-weather', label: 'Why batteries fail in winter' },
 };
 

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import BottomBar from '@/components/BottomBar.tsx';
 import Header from '@/components/Header.tsx';
+import { LANDING_PAGES } from '@/lib/pages.ts';
 import { ADDRESS_ONE_LINE, BOOKING, COMPANY, EMAIL, NAV, PHONE_DISPLAY, PHONE_HREF, siteUrl } from '@/lib/site.ts';
 
 const jsonLd = {
@@ -31,13 +32,19 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
             <a href={`mailto:${EMAIL}`} className="site-footer__email">{EMAIL}</a>
           </div>
           <nav className="site-footer__nav" aria-label="Footer">
-            {NAV.map(n => <Link key={n.href} href={n.href}>{n.label}</Link>)}
-            <Link href="/book-mot-luton">Book an MOT in Luton</Link>
-            <Link href="/saturday-mot-luton">Saturday MOTs</Link>
-            <Link href="/dpf-cleaning-luton">DPF cleaning</Link>
-            <Link href="/how-to-prepare-for-your-mot">MOT checklist</Link>
-            <Link href="/car-battery-cold-weather">Winter battery tips</Link>
-            <Link href="/privacy">Privacy</Link>
+            <div className="site-footer__col">
+              <span className="site-footer__head">Drive Safe</span>
+              {NAV.map(n => <Link key={n.href} href={n.href}>{n.label}</Link>)}
+              <Link href="/privacy">Privacy</Link>
+            </div>
+            <div className="site-footer__col">
+              <span className="site-footer__head">Services</span>
+              {LANDING_PAGES.filter(p => p.group === 'services').map(p => <Link key={p.path} href={p.path}>{p.label}</Link>)}
+            </div>
+            <div className="site-footer__col">
+              <span className="site-footer__head">Guides</span>
+              {LANDING_PAGES.filter(p => p.group === 'guides').map(p => <Link key={p.path} href={p.path}>{p.label}</Link>)}
+            </div>
           </nav>
         </div>
         <div className="wrap site-footer__legal">

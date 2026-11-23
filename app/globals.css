@@ -96,7 +96,9 @@ img { max-width: 100%; }
 .site-footer__phone { color: #fff; font-weight: 700; text-decoration: none; }
 .site-footer__email { color: var(--on-navy); text-decoration: none; overflow-wrap: anywhere; }
 .site-footer__email:hover { color: #fff; }
-.site-footer__nav { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: flex-start; }
+.site-footer__nav { display: flex; flex-wrap: wrap; gap: 28px 56px; align-items: flex-start; }
+.site-footer__col { display: flex; flex-direction: column; gap: 8px; min-width: 150px; }
+.site-footer__head { color: #fff; font-weight: 700; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 2px; }
 .site-footer__nav a { color: var(--on-navy); text-decoration: none; font-size: 15px; }
 .site-footer__nav a:hover { color: #fff; }
 .site-footer__legal { padding-top: 18px; padding-bottom: 28px; border-top: 1px solid rgba(255,255,255,.08); font-size: 13px; }
@@ -639,3 +641,15 @@ a.adm-jobstatus:hover { filter: brightness(.96); color: var(--ink-2); }
 .bat-two > div { flex: 1 1 340px; min-width: 0; }
 .bat-list { flex: 1.4 1 420px; min-width: 0; margin: 0; gap: 16px; }
 .bat-list li > span { display: block; }
+.price-card__price--word { font-size: clamp(52px, 7vw, 76px); line-height: 1; white-space: nowrap; }
+/* MOT due date checker */
+.chk-hero { padding-top: clamp(48px, 7vw, 88px); padding-bottom: clamp(48px, 7vw, 88px); max-width: 760px; }
+.chk-card { margin-top: 28px; background: #fff; color: var(--ink, #0e1a2c); border-radius: 16px; padding: clamp(18px, 3vw, 28px); }
+.chk-card a { color: var(--navy); font-weight: 700; }
+.chk-form { display: flex; flex-wrap: wrap; gap: 12px; }
+.chk-plate { flex: 1 1 220px; min-width: 0; background: #f7d117; border: 2px solid #111; border-radius: 8px; padding: 12px 16px; font: 800 28px/1.1 Arial, Helvetica, sans-serif; letter-spacing: .08em; text-align: center; text-transform: uppercase; color: #111; }
+.chk-btn { flex: 0 0 auto; border-radius: 10px; padding: 0 24px; min-height: 58px; font-size: 17px; }
+.chk-result { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line); }
+.chk-car { font-size: 16px; color: var(--muted); }
+.chk-due { margin: 12px 0 0; font-size: 22px; line-height: 1.35; }
+.chk-note { margin: 8px 0 0; font-size: 16px; color: var(--muted); }
